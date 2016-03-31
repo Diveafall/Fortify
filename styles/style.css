@@ -1,0 +1,158 @@
+#game {
+    font-family: "Arial Black", Gadget, sans-serif;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 11px;
+    width: 900px;
+    height: 700px;
+}
+
+#game h1 {
+	text-align: center;
+}
+
+#game .screen {
+    width: 100%;
+    height: 100%;
+	display: none;
+}
+
+#game .screen.active {
+    background-color: lightgreen;
+	display: block;
+}
+
+#page-mainmenu {
+	padding-top: 1em;
+	cursor: pointer;
+	font-size: 0.75em;
+}
+
+ul.menu {
+	text-align: center;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+
+ul.menu li {
+	margin: 0.8em 0;
+}
+
+ul.menu li button {
+	font-family: Arial, sans-serif;
+	font-size: 1.5em;
+	color: #CECEF6;
+	width: 50%;
+	height: 5%;
+	background: #0404B4;
+	border: 0.1em solid rgb(255, 0, 0);
+	border-radius: 0.5em;
+	box-shadow: 0.2em 0.2em 0.3em rgb(0, 0, 0);
+}
+
+ul.menu li button:hover {
+	background: #2E2EFE;
+}
+
+ul.menu li button:active {
+	color: #CECEF6;
+	background: rgb(0, 0, 0);
+}
+
+#page-highscores ol {
+	text-align: center;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+
+#page-game div p {
+	font-size: 0.5em;
+}
+
+#page-about p {
+	text-align: center;
+}
+
+#game-play {
+    width: 100%;
+    height: 100%;
+    float: left;
+    background-color: red;
+}
+
+#left-panel {
+    width: 665px;
+    height: 100%;
+    background-color: greenyellow;
+    float: left;
+}
+
+#score-panel {
+    width: 100%;
+    height: 35px;
+    background-color: yellow;
+    float: left;
+}
+
+#score-panel ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    background-color: pink;
+}
+
+#score-panel ul li {
+    float: left;
+    width: 20%;
+    height: 100%;
+    padding: 8px 10px;
+}
+
+#score-panel ul li label {
+    height: 100%;
+    font-size: 0.9em;
+}
+
+#game-panel {
+    width: 100%;
+    height: 665px;
+    background-color: cyan;
+    float: left;
+}
+
+#game-panel canvas {
+    background-color: aquamarine;
+    width: 665px;
+    height: 665px;
+}
+
+#info-panel {
+    width: 235px;
+    height: 100%;
+    float: left;
+    background-color: cornflowerblue;
+}
+
+#control-panel {
+    height: 10%;
+}
+
+.button-container {
+    width: 100%;
+    overflow-y: auto;
+}
+
+.button-container > button {
+    float: left;
+    margin: 5px;
+    background-color: honeydew;
+}
+
+#control-panel button {
+    width: 45%;
+}
