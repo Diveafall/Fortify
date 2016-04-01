@@ -87,7 +87,7 @@ FORTIFY.model = (function(components, graphics, input) {
     function renderPlacing() {
         grid.render(graphics);
         for (var i = 0; i < towers.length; ++i) {
-            graphics.drawTower(towers[i]);
+            graphics.drawTower(towers[i], false);
         }
     }
     

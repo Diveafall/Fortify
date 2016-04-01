@@ -114,7 +114,17 @@ FORTIFY.graphics = (function() {
 	// Draw tower
 	//
 	//------------------------------------------------------------------
-	function drawTower(tower) {
+	function drawTower(tower, a) {
+        // Draw base
+        if (a) {
+            context.save();
+        context.fillStyle = 'lightgrey';
+        context.beginPath();
+        context.arc(tower.center.x, tower.center.y, tower.shootRadius, 0, 2 * Math.PI);
+        context.fill();
+        context.restore();
+        }
+        
 		// Draw base
         context.save();
         context.fillStyle = tower.baseColor;
@@ -152,6 +162,7 @@ FORTIFY.graphics = (function() {
 	return {
 		clear : clear,
         getCanvas: function() { return canvas; },
+        getContext: function() { return context; },
         canvasFrame: canvasFrame,
 		drawRectangle : drawRectangle,
 		drawText: drawText,

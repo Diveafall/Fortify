@@ -6,8 +6,8 @@ FORTIFY.components = (function() {
 	var Constants = {
         get gridCellDimentions() { return { width: 15, height: 15 }; },
         get gridCellBorder() { return 1; },
-        get gridAvailableCellColor() { return 'rgba(50, 205, 50, 1)'; },
-        get gridUnavailableCellColor() { return 'rgba(230, 32, 32, 1)'; },
+        get gridAvailableCellColor() { return 'rgba(0, 255, 0, 1)'; },
+        get gridUnavailableCellColor() { return 'rgba(255, 0, 0, 1)'; },
         get gridHighlightedCellColor() { return 'rgba(75, 0, 130, 1)'; },
         get gridUnavailableHighlightedColor() { return 'rgba(255, 0, 255, 1)'; }
 	};
@@ -185,6 +185,9 @@ FORTIFY.components = (function() {
         
         that.render = function(graphics) {
             if (isPlacing) {
+                var context = graphics.getContext();
+                context.save();
+                context.globalAlpha = 0.5;
                 canPlace = true;
                 for (var i = 0; i < numberOfRows; ++i) {
                     for (var j = 0; j < numberOfCols; ++j) {
@@ -210,7 +213,8 @@ FORTIFY.components = (function() {
                     }
                 }
                 
-                if (canPlace) graphics.drawTower(currentSelection.selectedTower);
+                if (canPlace) graphics.drawTower(currentSelection.selectedTower, true);
+                context.restore();
             }
         };
         
@@ -236,7 +240,7 @@ FORTIFY.components = (function() {
         
         var that = FORTIFY.View(spec);
         
-        that.baseColor = '#ffffff';
+        that.baseColor = '#808080';
         that.cannonColor = '#000000';
         
         that.cannonLength = that.height * 0.5;
@@ -244,6 +248,8 @@ FORTIFY.components = (function() {
         
         that.cellSize = spec.cellSize;
         that.radius = that.height / 3;
+        
+        that.shootRadius = that.height * 1.5;
         
         // return the total number of cells required for this tower
         that.totalCells = function() { return spec.cellSize.horizCells * spec.cellSize.vertiCells; };
