@@ -64,7 +64,7 @@
                     
                     <!-- GAME PANEL -->
                     <div id="game-panel">
-                        <canvas id="canvas-main"></canvas>
+                        <canvas id="canvas-main" width="675px" height="675px"></canvas>
                     </div>
                 </div>
                 
@@ -79,11 +79,11 @@
                     
                     <!-- TOWER PANEL -->
                     <div id="tower-panel" class="button-container">
-                        <button>Projectile</button>
-                        <button>Guided Projectile</button>
-                        <button>Bomb</button>
-                        <button>Slow</button>
-                        <button>Flame</button>
+                        <button onclick="FORTIFY.model.towerPurchased(FORTIFY.components.Tower)">Projectile</button>
+                        <button onclick="FORTIFY.model.towerPurchased(FORTIFY.components.Tower)">Guided Projectile</button>
+                        <button onclick="FORTIFY.model.towerPurchased(FORTIFY.components.Tower)">Bomb</button>
+                        <button onclick="FORTIFY.model.towerPurchased(FORTIFY.components.Tower)">Slow</button>
+                        <button onclick="FORTIFY.model.towerPurchased(FORTIFY.components.Tower)">Flame</button>
                     </div>
                 </div>
                 
@@ -97,6 +97,7 @@
             };
         </script>
         <script src = "scripts/Graphics.js"></script>
+        <script src = "scripts/view.js"></script>
         <script src = "scripts/input.js"></script>
         <script src = "scripts/HighScores.js"></script>
         <script src = "scripts/screens.js"></script>

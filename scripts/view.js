@@ -106,7 +106,7 @@ FORTIFY.Rect = function(x, y, width, height) {
 FORTIFY.View = function(specs) {
     var that = {};
     
-    that.frame = FORTIFY.Rect(specs.x, specs.y, specs.width, specs.height);
+    that.frame = FORTIFY.Rect(specs.frame.x, specs.frame.y, specs.frame.width, specs.frame.height);
     that.containerFrame = specs.containerFrame;
     
     Object.defineProperty(that, 'origin', {
@@ -125,10 +125,18 @@ FORTIFY.View = function(specs) {
         }
     });
     
-    Object.defineProperty(that, 'size', {
-        get: function() { return that.frame.size; },
-        set: function(newSize) { 
-            that.frame.size = newSize; 
+    Object.defineProperty(that, 'width', {
+        get: function() { return that.frame.size.width; },
+        set: function(newWidth) { 
+            that.frame.size.width = newWidth; 
+            that.layoutSubviews && that.layoutSubviews(); 
+        }
+    });
+    
+    Object.defineProperty(that, 'height', {
+        get: function() { return that.frame.size.height; },
+        set: function(newHeight) { 
+            that.frame.size.height = newHeight; 
             that.layoutSubviews && that.layoutSubviews(); 
         }
     });

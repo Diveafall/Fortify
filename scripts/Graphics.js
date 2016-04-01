@@ -38,8 +38,10 @@ FORTIFY.graphics = (function() {
 		context.fillStyle = spec.fill;
 		context.fillRect(spec.x, spec.y, spec.width, spec.height);
 
-		context.strokeStyle = spec.stroke;
-		context.strokeRect(spec.x, spec.y, spec.width, spec.height);
+        if (spec.stroke) {    
+            context.strokeStyle = spec.stroke;
+            context.strokeRect(spec.x, spec.y, spec.width, spec.height);
+        }
 	}
 
 	//------------------------------------------------------------------
@@ -106,11 +108,54 @@ FORTIFY.graphics = (function() {
 
 		context.restore();
 	}
+    
+    //------------------------------------------------------------------
+	//
+	// Draw tower
+	//
+	//------------------------------------------------------------------
+	function drawTower(tower) {
+		// Draw base
+        context.save();
+        context.fillStyle = tower.baseColor;
+        context.beginPath();
+        context.arc(tower.center.x, tower.center.y, tower.radius, 0, 2 * Math.PI);
+        context.fill();
+        context.restore();
+        
+        // Draw cannon
+        // context.save();
+        // context.fillStyle = tower.cannonColor;
+        // context.fillRect(
+        //     tower.origin.x,
+        //     tower.origin.y,
+        //     tower.width,
+        //     tower.height
+        // );
+        // context.restore();
+	}
 
+    //------------------------------------------------------------------
+	//
+	// Return canvas frame
+	//
+	//------------------------------------------------------------------
+    function canvasFrame() {
+        return {
+            x: 0,
+            y: 0,
+            width: canvas.width,
+            height: canvas.height
+        };
+    }
+    
 	return {
 		clear : clear,
+        getCanvas: function() { return canvas; },
+        canvasFrame: canvasFrame,
 		drawRectangle : drawRectangle,
 		drawText: drawText,
+        drawTower: drawTower,
 		measureTextWidth: measureTextWidth,
 		measureTextHeight: measureTextHeight
 	};
