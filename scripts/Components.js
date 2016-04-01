@@ -239,6 +239,9 @@ FORTIFY.components = (function() {
         that.baseColor = '#ffffff';
         that.cannonColor = '#000000';
         
+        that.cannonLength = that.height * 0.5;
+        that.cannonWidth = that.width * 0.2;
+        
         that.cellSize = spec.cellSize;
         that.radius = that.height / 3;
         

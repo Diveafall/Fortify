@@ -124,15 +124,15 @@ FORTIFY.graphics = (function() {
         context.restore();
         
         // Draw cannon
-        // context.save();
-        // context.fillStyle = tower.cannonColor;
-        // context.fillRect(
-        //     tower.origin.x,
-        //     tower.origin.y,
-        //     tower.width,
-        //     tower.height
-        // );
-        // context.restore();
+        context.save();
+        context.fillStyle = tower.cannonColor;
+        context.fillRect(
+            tower.center.x - tower.cannonWidth / 2,
+            tower.center.y,
+            tower.cannonWidth,
+            tower.cannonLength
+        );
+        context.restore();
 	}
 
     //------------------------------------------------------------------
