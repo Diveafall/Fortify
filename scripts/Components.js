@@ -230,14 +230,7 @@ FORTIFY.components = (function() {
     //      cellSize: Object containing vertical and horizontal number of cells this tower requires
 	//
 	//------------------------------------------------------------------
-    function Tower() {
-        var spec = { cellSize: { horizCells: 3, vertiCells: 3 } };
-        spec.frame = {
-            x: 0, y: 0, 
-            width: spec.cellSize.horizCells * Constants.gridCellDimentions.width, 
-            height: spec.cellSize.vertiCells * Constants.gridCellDimentions.height
-        }
-        
+    function Tower(spec) {
         var that = FORTIFY.View(spec);
         
         that.baseColor = '#808080';
@@ -248,18 +241,34 @@ FORTIFY.components = (function() {
         
         that.cellSize = spec.cellSize;
         that.radius = that.height / 3;
+        that.angle = 0;
         
         that.shootRadius = that.height * 1.5;
         
         // return the total number of cells required for this tower
         that.totalCells = function() { return spec.cellSize.horizCells * spec.cellSize.vertiCells; };
         
+        // rotates towards a point
+        that.turn = function(point) {
+            that.angle = that.center.angle(point);
+        }
+        
+        that.update = function(elapsedTime) {
+            that.angle += 0.1;
+        };
+        
         return that;
+    }
+    
+    function GenericTower() {
+        var horizCells = 3, vertiCells = 3, width = horizCells * Constants.gridCellDimentions.width, height = vertiCells * Constants.gridCellDimentions.height;
+        return Tower({ cellSize: { horizCells: horizCells, vertiCells: vertiCells }, frame: { x: -width, y: -height, width: width, height: height } });
     }
     
 	return {
 		Constants: Constants,
         GameGrid: GameGrid,
-        Tower: Tower
+        Tower: Tower,
+        GenericTower: GenericTower
 	};
 }());

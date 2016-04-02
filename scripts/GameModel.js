@@ -5,6 +5,8 @@ FORTIFY.model = (function(components, graphics, input) {
         creeps = [],
         internalUpdate,
 		internalRender,
+        internalMouseMove,
+        internalMouseClick,
 		keyboard = input.Keyboard();
 
 	//------------------------------------------------------------------
@@ -17,10 +19,14 @@ FORTIFY.model = (function(components, graphics, input) {
         console.log('game model initialization');
         grid = components.GameGrid({ frame: graphics.canvasFrame() });
         
-        graphics.getCanvas().onclick = processMouseClick;
+        graphics.getCanvas().onclick = function(event) { internalMouseClick(event); };
+        graphics.getCanvas().onmousemove = function(event) { internalMouseMove(event); };
         
         internalUpdate = updatePlaying;
         internalRender = renderPlaying;
+        
+        internalMouseClick = playingMouseClick;
+        internalMouseMove = playingMouseMove;
 	}
     
     //------------------------------------------------------------------
@@ -28,14 +34,14 @@ FORTIFY.model = (function(components, graphics, input) {
 	// A tower has been selected from the Tower Store
 	//
 	//------------------------------------------------------------------
-    function towerPurchased(TowerType) {
+    function towerPurchased(TowerType) {        
         grid.beginPlacement(TowerType);
-        graphics.getCanvas().onmousemove = function(event) {
-            grid.update(event.offsetX, event.offsetY);
-        };
         
         internalRender = renderPlacing;
         internalUpdate = updatePlacing;
+        
+        internalMouseMove = placementMouseMove;
+        internalMouseClick = placementMouseClick;
     }
 
 	//------------------------------------------------------------------
@@ -49,18 +55,49 @@ FORTIFY.model = (function(components, graphics, input) {
     
     //------------------------------------------------------------------
 	//
-	// Handle mouse click
+	// Handle mouse move during tower placement
 	//
 	//------------------------------------------------------------------
-	function processMouseClick(event) {
+	function placementMouseMove(event) {
+        grid.update(event.offsetX, event.offsetY);
+	}
+    
+    //------------------------------------------------------------------
+	//
+	// Handle mouse move during tower placement
+	//
+	//------------------------------------------------------------------
+	function playingMouseMove(event) {
+        for (var i = 0; i < towers.length; ++i) {
+            towers[i].turn({ x: event.offsetX, y: event.offsetY });
+        }
+	}
+    
+    //------------------------------------------------------------------
+	//
+	// Handle mouse click during tower placement
+	//
+	//------------------------------------------------------------------
+	function placementMouseClick(event) {
         if (grid.isPlacing()) {
             if (grid.isValid()) {
                 towers.push(grid.endPlacement(true));
                 
                 internalUpdate = updatePlaying;
                 internalRender = renderPlaying;
+                
+                internalMouseMove = playingMouseMove;
+                internalMouseClick = playingMouseClick;
             }
         }
+	}
+    
+    //------------------------------------------------------------------
+	//
+	// Handle mouse click during tower placement
+	//
+	//------------------------------------------------------------------
+	function playingMouseClick(event) {
 	}
     
     //------------------------------------------------------------------
@@ -77,6 +114,9 @@ FORTIFY.model = (function(components, graphics, input) {
 	//
 	//------------------------------------------------------------------
     function updatePlaying(elapsedTime) {
+        // for (var i = 0; i < towers.length; ++i) {
+        //     towers[i].update(elapsedTime);
+        // }
     }
     
     //------------------------------------------------------------------
@@ -98,7 +138,7 @@ FORTIFY.model = (function(components, graphics, input) {
 	//------------------------------------------------------------------
 	function renderPlaying() {
         for (var i = 0; i < towers.length; ++i) {
-            graphics.drawTower(towers[i]);
+            graphics.drawTower(towers[i], false);
         }
 	}
 

@@ -21,17 +21,14 @@ FORTIFY.Point = function(x, y) {
         get: function() { return _y.render; }
     });
     
-    // helper readonly properties
-    Object.defineProperty(that, 'magnitude', {
-        get: function() { return Math.sqrt(_x.main * _x.main + _y.main * _y.main); }
-    });
-    
-    Object.defineProperty(that, 'normalize', {
-        get: function() {
-            var magnitude = that.magnitude;
-            return FORTIFY.Point(_x.main / magnitude, _y.main / magnitude);
+    that.angle = function(point) {
+        var dy = point.y - that.y, dx = point.x - that.x;
+        if (that.x > point.x) {
+            return Math.PI + Math.atan(dy / dx);
+        } else {
+            return Math.atan(dy / dx);
         }
-    });
+    };
     
     return that;
 };

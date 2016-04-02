@@ -118,11 +118,11 @@ FORTIFY.graphics = (function() {
         // Draw base
         if (a) {
             context.save();
-        context.fillStyle = 'lightgrey';
-        context.beginPath();
-        context.arc(tower.center.x, tower.center.y, tower.shootRadius, 0, 2 * Math.PI);
-        context.fill();
-        context.restore();
+            context.fillStyle = 'lightgrey';
+            context.beginPath();
+            context.arc(tower.center.x, tower.center.y, tower.shootRadius, 0, 2 * Math.PI);
+            context.fill();
+            context.restore();
         }
         
 		// Draw base
@@ -135,13 +135,12 @@ FORTIFY.graphics = (function() {
         
         // Draw cannon
         context.save();
+        context.translate(tower.center.x, tower.center.y);
+		context.rotate(tower.angle);
+		context.translate(-tower.center.x, -tower.center.y);
         context.fillStyle = tower.cannonColor;
-        context.fillRect(
-            tower.center.x - tower.cannonWidth / 2,
-            tower.center.y,
-            tower.cannonWidth,
-            tower.cannonLength
-        );
+        context.fillRect(tower.center.x, tower.center.y - tower.cannonWidth / 2, tower.width / 2, tower.cannonWidth);
+        
         context.restore();
 	}
 
