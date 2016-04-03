@@ -241,20 +241,48 @@ FORTIFY.components = (function() {
         
         that.cellSize = spec.cellSize;
         that.radius = that.height / 3;
+        
+        // rotation
         that.angle = 0;
+        that.targetAngle = 0;
+        that.rotationSpeed = 2 * Math.PI / 1000; // one rotation per second
         
         that.shootRadius = that.height * 1.5;
+        
+        // helper function: returns true if number is within range of the pivot
+        function isWithinRange(num, pivot, range) {
+            if (num >= pivot - range && num <= pivot + range) return true;
+            return false;
+        }
         
         // return the total number of cells required for this tower
         that.totalCells = function() { return spec.cellSize.horizCells * spec.cellSize.vertiCells; };
         
-        // rotates towards a point
+        // set target angle to angle between my center and given point
         that.turn = function(point) {
-            that.angle = that.center.angle(point);
+            that.targetAngle = that.center.angle(point);
         }
         
         that.update = function(elapsedTime) {
-            that.angle += 0.1;
+            // if I'm not within specific range of my target
+            if (!isWithinRange(that.angle, that.targetAngle, 0.4)) {
+                // find the distance between me and my target
+                var delta = Math.abs(that.angle - that.targetAngle);
+                // if my angle comes before target angle
+                if (that.angle <= that.targetAngle) {
+                    // if distance is less than PI go clockwise, otherwise: counterclockwise
+                    that.angle += (delta > Math.PI ? -1 : 1) * that.rotationSpeed * elapsedTime;
+                } else {
+                    // if distance is less than PI go counterclockwise, otherwise: clockwise
+                    that.angle += (delta > Math.PI ? 1 : -1) * that.rotationSpeed * elapsedTime;
+                }
+            }
+            // if I'm in range of my target
+            else that.angle = that.targetAngle;
+            
+            // make sure we stay inside these bounds [0, 2 * PI]
+            if (that.angle > 2 * Math.PI) that.angle = 0;
+            if (that.angle < 0) that.angle += 2 * Math.PI;
         };
         
         return that;

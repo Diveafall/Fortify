@@ -114,9 +114,9 @@ FORTIFY.model = (function(components, graphics, input) {
 	//
 	//------------------------------------------------------------------
     function updatePlaying(elapsedTime) {
-        // for (var i = 0; i < towers.length; ++i) {
-        //     towers[i].update(elapsedTime);
-        // }
+        for (var i = 0; i < towers.length; ++i) {
+            towers[i].update(elapsedTime);
+        }
     }
     
     //------------------------------------------------------------------

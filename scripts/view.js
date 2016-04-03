@@ -23,10 +23,11 @@ FORTIFY.Point = function(x, y) {
     
     that.angle = function(point) {
         var dy = point.y - that.y, dx = point.x - that.x;
-        if (that.x > point.x) {
+        if (that.x > point.x) { // account for slightly different direction of the x-axis
             return Math.PI + Math.atan(dy / dx);
         } else {
-            return Math.atan(dy / dx);
+            var angle = Math.atan(dy / dx);
+            return angle < 0 ? angle + 2 * Math.PI : angle;
         }
     };
     
