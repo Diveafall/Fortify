@@ -21,7 +21,9 @@ FORTIFY.model = (function(components, graphics, input) {
         
         FORTIFY.Util.init();
         
-        creeps.push(components.Creep(grid.height, grid.width));
+        // Pass in start and endLoc
+        var endLoc = {r: 25, c: 25}
+        creeps.push(components.Creep(endLoc, endLoc));
         
         internalUpdate = updatePlaying;
         internalRender = renderPlaying;

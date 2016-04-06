@@ -124,6 +124,7 @@ FORTIFY.Creep = (function(Util) {
             
             // Update location
             that.origin = {x: that.origin.x + actualMoveVector.x, y: that.origin.y + actualMoveVector.y};
+            //console.log(that.origin.x + " " + that.origin.y);
         }
         
         return that;
