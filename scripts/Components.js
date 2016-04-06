@@ -1,5 +1,5 @@
 
-FORTIFY.components = (function() {
+FORTIFY.components = (function(Creep) {
 
 	//
 	// Constants, as best as we can do them in JavaScript
@@ -59,14 +59,17 @@ FORTIFY.components = (function() {
                 grid[i][j] = (function() {
                     var available = true, 
                         highlighted = false,
+                        visited = false;
                         pointOrigin = pointCoordFromLocation(i, j);
                         
                     return {
                         highlight: function() { highlighted = true; },
                         discount: function() { highlighted = false; },
                         occupy: function() { available = false; },
+                        visited: function() { visited = true; },
                         isAvailable: function() { return available; },
                         isHighlighted: function() { return highlighted; },
+                        isVisited: function() { return visited; },
                         pointOrigin: pointOrigin
                     };
                 })();
@@ -260,6 +263,7 @@ FORTIFY.components = (function() {
 	return {
 		Constants: Constants,
         GameGrid: GameGrid,
-        Tower: Tower
+        Tower: Tower,
+        Creep: Creep.Creep
 	};
-}());
+}(FORTIFY.Creep));

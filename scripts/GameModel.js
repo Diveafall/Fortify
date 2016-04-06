@@ -19,6 +19,10 @@ FORTIFY.model = (function(components, graphics, input) {
         
         graphics.getCanvas().onclick = processMouseClick;
         
+        FORTIFY.Util.init();
+        
+        creeps.push(components.Creep(grid.height, grid.width));
+        
         internalUpdate = updatePlaying;
         internalRender = renderPlaying;
 	}
@@ -109,6 +113,9 @@ FORTIFY.model = (function(components, graphics, input) {
 	//------------------------------------------------------------------
 	function update(elapsedTime) {
 		internalUpdate(elapsedTime);
+        for (var i = 0; i < creeps.length; i++) {
+            creeps[i].update(elapsedTime);
+        }
 	}
 
 	//------------------------------------------------------------------
@@ -118,6 +125,9 @@ FORTIFY.model = (function(components, graphics, input) {
 	//------------------------------------------------------------------
 	function render() {
 		internalRender();
+        for (var i = 0; i < creeps.length; i++) {
+            graphics.drawCreep(creeps[i]);
+        }
 	}
 
 	return {

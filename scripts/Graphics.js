@@ -144,6 +144,21 @@ FORTIFY.graphics = (function() {
         );
         context.restore();
 	}
+    
+    //------------------------------------------------------------------
+	//
+	// Draw creep
+	//
+	//------------------------------------------------------------------
+	function drawCreep(creep) {
+        context.save();
+        context.fillStyle = creep.creepColor;
+        context.beginPath();
+        context.arc(creep.center.x, creep.center.y, creep.radius, 0, 2 * Math.PI);
+        context.fill();
+        context.restore();   
+    }
+    
 
     //------------------------------------------------------------------
 	//
@@ -167,6 +182,7 @@ FORTIFY.graphics = (function() {
 		drawRectangle : drawRectangle,
 		drawText: drawText,
         drawTower: drawTower,
+        drawCreep: drawCreep,
 		measureTextWidth: measureTextWidth,
 		measureTextHeight: measureTextHeight
 	};
