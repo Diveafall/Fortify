@@ -126,7 +126,7 @@ ul.menu li button:active {
 }
 
 #game-panel canvas {
-    background-color: lawngreen;
+    background-color: lightgray;
     width: 675px;
     height: 675px;
 }

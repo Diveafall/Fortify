@@ -122,10 +122,10 @@ FORTIFY.components = (function() {
         that.isPlacing = function() { return isPlacing; };
         
         // setting up tower placement 
-        that.beginPlacement = function(TowerType) {
+        that.beginPlacement = function(tower) {
             if (!isPlacing) {
                 isPlacing = true; // start placing
-                currentSelection.selectedTower = TowerType(); // initialize a tower of given type, store it
+                currentSelection.selectedTower = tower; // initialize a tower of given type, store it
                 // horiz and vertical offsets help highlight appropriate cells
                 currentSelection.horizOffset = Math.floor(currentSelection.selectedTower.cellSize.horizCells / 2);
                 currentSelection.vertiOffset = Math.floor(currentSelection.selectedTower.cellSize.vertiCells / 2);
@@ -231,13 +231,13 @@ FORTIFY.components = (function() {
 	//
 	//------------------------------------------------------------------
     function Tower(spec) {
-        var that = FORTIFY.View(spec);
+        var that = FORTIFY.View(spec), fireTimer = 0, currentTarget = undefined;
         
         that.baseColor = '#808080';
         that.cannonColor = '#000000';
         
         that.cannonLength = that.height * 0.5;
-        that.cannonWidth = that.width * 0.2;
+        that.cannonWidth = that.width * 0.1;
         
         that.cellSize = spec.cellSize;
         that.radius = that.height / 3;
@@ -247,7 +247,25 @@ FORTIFY.components = (function() {
         that.targetAngle = 0;
         that.rotationSpeed = 2 * Math.PI / 1000; // one rotation per second
         
-        that.shootRadius = that.height * 1.5;
+        // firing
+        that.shootRadius = that.height * 2;
+        that.shootRate = 1000 / 10; // once per second
+        that.fire = function() {
+            
+            var newProjectile = Projectile({
+                rotation: that.angle, // current angle of the tower
+                moveRate: 500 / 1000, // 100 pixels per second
+                containerFrame: that.containerFrame, // projectile can see the frame it's in
+                frame: {
+                    x: 0,
+                    y: 0,
+                    width: that.width * 0.3,
+                    height: that.cannonWidth
+                }
+            });
+            newProjectile.center = that.center;
+            spec.projectiles.push(newProjectile);
+        };
         
         // helper function: returns true if number is within range of the pivot
         function isWithinRange(num, pivot, range) {
@@ -261,9 +279,15 @@ FORTIFY.components = (function() {
         // set target angle to angle between my center and given point
         that.turn = function(point) {
             that.targetAngle = that.center.angle(point);
+            if (that.shootRadius > that.center.distance(point)) {
+                currentTarget = point;
+            } else {
+                currentTarget = undefined;
+            }
         }
         
         that.update = function(elapsedTime) {
+            // HANDLING ROTATION
             // if I'm not within specific range of my target
             if (!isWithinRange(that.angle, that.targetAngle, 0.4)) {
                 // find the distance between me and my target
@@ -278,7 +302,17 @@ FORTIFY.components = (function() {
                 }
             }
             // if I'm in range of my target
-            else that.angle = that.targetAngle;
+            else {
+                that.angle = that.targetAngle;
+                if (currentTarget) {
+                    // HANDLING THE FIRING
+                    fireTimer += elapsedTime;
+                    if (fireTimer >= that.shootRate) { // time to shoot
+                        that.fire(); // FIRE!
+                        fireTimer = 0; // reset timer
+                    }
+                }
+            }
             
             // make sure we stay inside these bounds [0, 2 * PI]
             if (that.angle > 2 * Math.PI) that.angle = 0;
@@ -288,10 +322,58 @@ FORTIFY.components = (function() {
         return that;
     }
     
-    function GenericTower() {
+    function GenericTower(spec) {
         var horizCells = 3, vertiCells = 3, width = horizCells * Constants.gridCellDimentions.width, height = vertiCells * Constants.gridCellDimentions.height;
-        return Tower({ cellSize: { horizCells: horizCells, vertiCells: vertiCells }, frame: { x: -width, y: -height, width: width, height: height } });
+        return Tower({ 
+            cellSize: { horizCells: horizCells, vertiCells: vertiCells }, 
+            frame: { x: -width, y: -height, width: width, height: height },
+            projectiles: spec.projectiles,
+            containerFrame: spec.containerFrame 
+        });
     }
+
+    /**
+     * Creates an instance of Projectile
+     * 
+     * @constructor
+     * @this {Projectile}
+     * @param {Object} spec Must include: frame, rotation, moveRate 
+     */
+    function Projectile(spec) {
+        var that = FORTIFY.View(spec);
+        
+        that.headStart = 10;
+        that.color = 'rgba(254, 253, 227, 1)';
+        that.strokeColor = 'rgba(112, 246, 90, 1)';
+        
+        Object.defineProperty(that, 'rotation', {
+            get: function() { return spec.rotation; }
+        });
+        
+        Object.defineProperty(that, 'moveRate', {
+            get: function() { return spec.moveRate; }
+        });
+        
+        that.isWithinBounds = function() {
+            if (that.center.x < 0 ||
+                that.center.y < 0 ||
+                that.frame.right > that.containerFrame.right ||
+                that.frame.bottom > that.containerFrame.bottom) {
+                    
+                console.log('projectile out of bounds');
+                
+                return false;
+            }
+            return true;
+        };
+        
+        that.update = function(elapsedTime) {
+            var vectorX = Math.cos(spec.rotation), vectorY = Math.sin(spec.rotation);
+            that.center = that.center.add({ x: vectorX * spec.moveRate * elapsedTime, y: vectorY * spec.moveRate * elapsedTime });
+        };
+
+        return that;        
+    }    
     
 	return {
 		Constants: Constants,

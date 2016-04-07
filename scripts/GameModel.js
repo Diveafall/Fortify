@@ -3,6 +3,7 @@ FORTIFY.model = (function(components, graphics, input) {
 	var grid,
         towers = [],
         creeps = [],
+        projectiles = [],
         internalUpdate,
 		internalRender,
         internalMouseMove,
@@ -35,7 +36,10 @@ FORTIFY.model = (function(components, graphics, input) {
 	//
 	//------------------------------------------------------------------
     function towerPurchased(TowerType) {        
-        grid.beginPlacement(TowerType);
+        grid.beginPlacement(TowerType({
+            containerFrame: grid.frame,
+            projectiles: projectiles
+        }));
         
         internalRender = renderPlacing;
         internalUpdate = updatePlacing;
@@ -117,6 +121,12 @@ FORTIFY.model = (function(components, graphics, input) {
         for (var i = 0; i < towers.length; ++i) {
             towers[i].update(elapsedTime);
         }
+        for (var i = projectiles.length - 1; i >= 0; i--) {
+            projectiles[i].update(elapsedTime);
+            if (!projectiles[i].isWithinBounds()) {
+                projectiles.splice(i, 1);
+            }
+        }
     }
     
     //------------------------------------------------------------------
@@ -139,6 +149,9 @@ FORTIFY.model = (function(components, graphics, input) {
 	function renderPlaying() {
         for (var i = 0; i < towers.length; ++i) {
             graphics.drawTower(towers[i], false);
+        }
+        for (var i = 0; i < projectiles.length; ++i) {
+            graphics.drawProjectile(projectiles[i]);
         }
 	}
 

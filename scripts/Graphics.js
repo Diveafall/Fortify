@@ -143,6 +143,29 @@ FORTIFY.graphics = (function() {
         
         context.restore();
 	}
+    
+    //------------------------------------------------------------------
+	//
+	// Draw a projectile
+	//
+	//------------------------------------------------------------------
+	function drawProjectile(projectile) {
+        context.save();
+        
+        context.translate(projectile.center.x, projectile.center.y);
+        context.rotate(projectile.rotation);
+        context.translate(-projectile.center.x, -projectile.center.y);
+        
+        context.fillStyle = projectile.color;
+        context.fillRect(projectile.center.x + projectile.headStart, projectile.center.y - projectile.height / 2, projectile.width, projectile.height);
+        
+        if (projectile.strokeColor) {
+            context.strokeStyle = projectile.strokeColor;
+            context.strokeRect(projectile.center.x + projectile.headStart, projectile.center.y - projectile.height / 2, projectile.width, projectile.height);
+        }
+        
+        context.restore();
+	}
 
     //------------------------------------------------------------------
 	//
@@ -166,6 +189,7 @@ FORTIFY.graphics = (function() {
 		drawRectangle : drawRectangle,
 		drawText: drawText,
         drawTower: drawTower,
+        drawProjectile: drawProjectile,
 		measureTextWidth: measureTextWidth,
 		measureTextHeight: measureTextHeight
 	};
