@@ -22,8 +22,8 @@ FORTIFY.model = (function(components, graphics, input) {
         FORTIFY.Util.init();
         
         // Pass in start and endLoc
-        var endLoc = {r: 25, c: 25}
-        creeps.push(components.Creep(endLoc, endLoc));
+        // var endLoc = {r: 25, c: 25}
+        creeps.push(components.Creep(grid));
         
         internalUpdate = updatePlaying;
         internalRender = renderPlaying;
@@ -116,7 +116,7 @@ FORTIFY.model = (function(components, graphics, input) {
 	function update(elapsedTime) {
 		internalUpdate(elapsedTime);
         for (var i = 0; i < creeps.length; i++) {
-            creeps[i].update(elapsedTime);
+            creeps[i].update(elapsedTime, grid);
         }
 	}
 

@@ -154,7 +154,7 @@ FORTIFY.graphics = (function() {
         context.save();
         context.fillStyle = creep.creepColor;
         context.beginPath();
-        context.arc(creep.origin.x, creep.origin.y, creep.radius, 0, 2 * Math.PI);
+        context.arc(creep.center.x, creep.center.y, creep.radius, 0, 2 * Math.PI);
         context.fill();
         context.restore();
     }

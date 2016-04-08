@@ -67,6 +67,7 @@ FORTIFY.components = (function(Creep) {
                         discount: function() { highlighted = false; },
                         occupy: function() { available = false; },
                         visited: function() { visited = true; },
+                        resetVisited: function() { visited = false; },
                         isAvailable: function() { return available; },
                         isHighlighted: function() { return highlighted; },
                         isVisited: function() { return visited; },
@@ -89,6 +90,12 @@ FORTIFY.components = (function(Creep) {
                 y: y
             }
         }
+        
+        that.numberOfCols = numberOfCols;
+        that.numberOfRows = numberOfRows;
+        that.creepSpawnLoc = loc(Math.floor(numberOfRows/2), 0);
+        that.creepEndLoc = loc(Math.floor(numberOfRows/2), numberOfCols-1);
+        that.getGridCopy = function() { return FORTIFY.Util.resetGridVisited(grid); };
         
         // Return (row, col) location from (x,y) coordinate
         function gridLocationFromCoord(x, y) {

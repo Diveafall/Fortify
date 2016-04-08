@@ -42,12 +42,16 @@ FORTIFY.Util = (function() {
         return FORTIFY.Point(col * FORTIFY.Constants.gridCellDimensions.width, row * FORTIFY.Constants.gridCellDimensions.height);
     }
     
-    // Shallow copy of grid
-    function copyGrid(grid) {
+    // Copy of grid
+    function resetGridVisited(grid) {
         var newGrid = new Array(grid.length);
 
         for (var i = 0; i < grid.length; i++) {
-            newGrid[i] = grid[i].slice();
+            newGrid[i] = new Array(grid[i].length);
+            for (var j = 0; j < grid[i].length; j++) {
+                grid[i][j].resetVisited();
+                newGrid[i][j] = grid[i][j];
+            }
         }
 
         return newGrid;
@@ -58,7 +62,7 @@ FORTIFY.Util = (function() {
         loc: loc,
         gridLocationFromCoord: gridLocationFromCoord,
         pointCoordFromLocation: pointCoordFromLocation,
-        copyGrid: copyGrid
+        resetGridVisited: resetGridVisited
     }
     
 }());
