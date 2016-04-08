@@ -196,7 +196,7 @@ FORTIFY.components = (function() {
                             y: grid[i][j].pointOrigin.y,
                             width: Constants.gridCellDimentions.width,
                             height: Constants.gridCellDimentions.height,
-                            fill: (function() {
+                            fill: (function() { // this function returns the appropriate color for the cell
                                 if (grid[i][j].isHighlighted()) {
                                     if (!grid[i][j].isAvailable() || !hasEnoughCells()) {
                                         canPlace = false;
@@ -249,12 +249,12 @@ FORTIFY.components = (function() {
         
         // firing
         that.shootRadius = that.height * 2;
-        that.shootRate = 1000 / 10; // once per second
+        that.shootRate = 1000 / 5; // once per second
         that.fire = function() {
             
-            var newProjectile = Projectile({
+            var newProjectile = spec.Projectile({
                 rotation: that.angle, // current angle of the tower
-                moveRate: 500 / 1000, // 100 pixels per second
+                moveRate: 300 / 1000, // pixels per second
                 containerFrame: that.containerFrame, // projectile can see the frame it's in
                 frame: {
                     x: 0,
@@ -263,7 +263,10 @@ FORTIFY.components = (function() {
                     height: that.cannonWidth
                 }
             });
+            
             newProjectile.center = that.center;
+            newProjectile.setTarget && newProjectile.setTarget(currentTarget);
+            
             spec.projectiles.push(newProjectile);
         };
         
@@ -328,7 +331,19 @@ FORTIFY.components = (function() {
             cellSize: { horizCells: horizCells, vertiCells: vertiCells }, 
             frame: { x: -width, y: -height, width: width, height: height },
             projectiles: spec.projectiles,
-            containerFrame: spec.containerFrame 
+            containerFrame: spec.containerFrame,
+            Projectile: Projectile
+        });
+    }
+    
+    function MissileTower(spec) {
+        var horizCells = 3, vertiCells = 3, width = horizCells * Constants.gridCellDimentions.width, height = vertiCells * Constants.gridCellDimentions.height;
+        return Tower({ 
+            cellSize: { horizCells: horizCells, vertiCells: vertiCells }, 
+            frame: { x: -width, y: -height, width: width, height: height },
+            projectiles: spec.projectiles,
+            containerFrame: spec.containerFrame, 
+            Projectile: GuidedProjectile
         });
     }
 
@@ -345,6 +360,7 @@ FORTIFY.components = (function() {
         that.headStart = 10;
         that.color = 'rgba(254, 253, 227, 1)';
         that.strokeColor = 'rgba(112, 246, 90, 1)';
+        that.rotation = spec.rotation;
         
         Object.defineProperty(that, 'rotation', {
             get: function() { return spec.rotation; }
@@ -368,17 +384,41 @@ FORTIFY.components = (function() {
         };
         
         that.update = function(elapsedTime) {
-            var vectorX = Math.cos(spec.rotation), vectorY = Math.sin(spec.rotation);
+            var vectorX = Math.cos(that.rotation), vectorY = Math.sin(that.rotation);
             that.center = that.center.add({ x: vectorX * spec.moveRate * elapsedTime, y: vectorY * spec.moveRate * elapsedTime });
         };
 
         return that;        
     }    
     
+    function GuidedProjectile(spec) {
+        var that = Projectile(spec), currentTarget = undefined,
+            base = {
+                update: that.update
+            };
+            
+        that.setTarget = function(target) {
+            currentTarget = target;
+        };
+            
+        that.update = function(elapsedTime) {
+            if (currentTarget) {
+                that.rotation = that.center.angle(currentTarget);
+                console.log("Current rotation: ", that.rotation, "Current target: x - ", currentTarget.x, "y - ", currentTarget.y);
+                console.log("My center: ", that.center.x, that.center.y);
+            }
+            // var vectorX = Math.cos(that.rotation), vectorY = Math.sin(that.rotation);
+            // that.center = that.center.add({ x: vectorX * spec.moveRate * elapsedTime, y: vectorY * spec.moveRate * elapsedTime });
+            base.update(elapsedTime);
+        };
+        
+        return that;
+    };
+    
 	return {
 		Constants: Constants,
         GameGrid: GameGrid,
-        Tower: Tower,
-        GenericTower: GenericTower
+        GenericTower: GenericTower,
+        MissileTower: MissileTower
 	};
 }());

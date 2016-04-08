@@ -152,6 +152,8 @@ FORTIFY.graphics = (function() {
 	function drawProjectile(projectile) {
         context.save();
         
+        drawText({ font: 'Georgia, serif', fill: 'black', position: { x: 100, y: 100 }, text: projectile.rotation.toString() });
+        
         context.translate(projectile.center.x, projectile.center.y);
         context.rotate(projectile.rotation);
         context.translate(-projectile.center.x, -projectile.center.y);

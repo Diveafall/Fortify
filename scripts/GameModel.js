@@ -72,8 +72,12 @@ FORTIFY.model = (function(components, graphics, input) {
 	//
 	//------------------------------------------------------------------
 	function playingMouseMove(event) {
+        var point = { x: event.offsetX, y: event.offsetY };
         for (var i = 0; i < towers.length; ++i) {
-            towers[i].turn({ x: event.offsetX, y: event.offsetY });
+            towers[i].turn(point);
+        }
+        for (var i = 0; i < projectiles.length; ++i) {
+            if (projectiles[i].setTarget) { projectiles[i].setTarget(point); }
         }
 	}
     
