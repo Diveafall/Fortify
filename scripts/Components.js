@@ -407,8 +407,6 @@ FORTIFY.components = (function() {
                 console.log("Current rotation: ", that.rotation, "Current target: x - ", currentTarget.x, "y - ", currentTarget.y);
                 console.log("My center: ", that.center.x, that.center.y);
             }
-            // var vectorX = Math.cos(that.rotation), vectorY = Math.sin(that.rotation);
-            // that.center = that.center.add({ x: vectorX * spec.moveRate * elapsedTime, y: vectorY * spec.moveRate * elapsedTime });
             base.update(elapsedTime);
         };
         
