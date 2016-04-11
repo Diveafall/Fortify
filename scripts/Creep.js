@@ -3,7 +3,7 @@ FORTIFY.Creep = (function(Util) {
     
     var Constants = {
         get creepColor() { return "#0000FF"; },
-        get creepSpeed() { return 0.02; }
+        get creepSpeed() { return 0.03; }
     }
     
     // Check if cell is open

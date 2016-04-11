@@ -5,7 +5,8 @@ FORTIFY.model = (function(components, graphics, input) {
         creeps = [],
         internalUpdate,
 		internalRender,
-		keyboard = input.Keyboard();
+		keyboard = input.Keyboard(),
+        timeToNextSpawn = 5000; // temp to spawn a new creep every second
 
 	//------------------------------------------------------------------
 	//
@@ -20,10 +21,6 @@ FORTIFY.model = (function(components, graphics, input) {
         graphics.getCanvas().onclick = processMouseClick;
         
         FORTIFY.Util.init();
-        
-        // Pass in start and endLoc
-        // var endLoc = {r: 25, c: 25}
-        creeps.push(components.Creep(grid));
         
         internalUpdate = updatePlaying;
         internalRender = renderPlaying;
@@ -83,6 +80,14 @@ FORTIFY.model = (function(components, graphics, input) {
 	//
 	//------------------------------------------------------------------
     function updatePlaying(elapsedTime) {
+        for (var i = 0; i < creeps.length; i++) {
+            creeps[i].update(elapsedTime, grid);
+        }
+        timeToNextSpawn -= elapsedTime;
+        if (timeToNextSpawn <= 0) {
+            creeps.push(components.Creep(grid));
+            timeToNextSpawn = 5000;
+        }
     }
     
     //------------------------------------------------------------------
@@ -115,9 +120,6 @@ FORTIFY.model = (function(components, graphics, input) {
 	//------------------------------------------------------------------
 	function update(elapsedTime) {
 		internalUpdate(elapsedTime);
-        for (var i = 0; i < creeps.length; i++) {
-            creeps[i].update(elapsedTime, grid);
-        }
 	}
 
 	//------------------------------------------------------------------
