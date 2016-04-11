@@ -103,7 +103,7 @@ ul.menu li button:active {
     overflow: hidden;
     width: 100%;
     height: 100%;
-    background-color: pink;
+    background-color: darkblue;
 }
 
 #score-panel ul li {
@@ -116,6 +116,7 @@ ul.menu li button:active {
 #score-panel ul li label {
     height: 100%;
     font-size: 0.9em;
+    color: white;
 }
 
 #game-panel {
@@ -126,7 +127,7 @@ ul.menu li button:active {
 }
 
 #game-panel canvas {
-    background-color: ghostwhite;
+    background-color: lightgray;
     width: 675px;
     height: 675px;
 }

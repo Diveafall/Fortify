@@ -21,17 +21,31 @@ FORTIFY.Point = function(x, y) {
         get: function() { return _y.render; }
     });
     
-    // helper readonly properties
-    Object.defineProperty(that, 'magnitude', {
-        get: function() { return Math.sqrt(_x.main * _x.main + _y.main * _y.main); }
-    });
-    
-    Object.defineProperty(that, 'normalize', {
-        get: function() {
-            var magnitude = that.magnitude;
-            return FORTIFY.Point(_x.main / magnitude, _y.main / magnitude);
+    // return angle with the point
+    that.angle = function(point) {
+        var dy = point.y - that.y, dx = point.x - that.x;
+        if (that.x > point.x) { // account for slightly different direction of the x-axis for html5 canvas
+            return Math.PI + Math.atan(dy / dx);
+        } else {
+            var angle = Math.atan(dy / dx);
+            return angle < 0 ? angle + 2 * Math.PI : angle;
         }
-    });
+    };
+    
+    // add vectors and return
+    that.add = function(point) {
+        return FORTIFY.Point(that.x + point.x, that.y + point.y);
+    };
+    
+    // multiply vectors and return
+    that.multiply = function(scalar) {
+        return FORTIFY.Point(that.x * scalar, that.y * scalar);
+    };
+    
+    // return distance from here to point
+    that.distance = function(point) {
+        return Math.sqrt(Math.pow((that.y - point.y), 2.0) + Math.pow((that.x - point.x), 2.0));
+    };
     
     return that;
 };
@@ -106,6 +120,7 @@ FORTIFY.Rect = function(x, y, width, height) {
 FORTIFY.View = function(specs) {
     var that = {};
     
+    that.enabled = true;
     that.frame = FORTIFY.Rect(specs.frame.x, specs.frame.y, specs.frame.width, specs.frame.height);
     that.containerFrame = specs.containerFrame;
     
