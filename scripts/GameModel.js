@@ -130,14 +130,7 @@ FORTIFY.model = (function(components, graphics, input) {
     }
     
     //------------------------------------------------------------------
-	//
-	// Update state of the game while playing
-	//
-	//------------------------------------------------------------------
-    function updatePlaying(elapsedTime) {
-        clock.update();
-        for (var i = 0; i < creeps.length; i++) {
-            creeps[i].update(elapsedTime, grid);
+    //
 	// Update creeps
 	//
 	//------------------------------------------------------------------
@@ -250,4 +243,4 @@ FORTIFY.model = (function(components, graphics, input) {
 		render: render,
         towerPurchased: towerPurchased
 	};
-} (FORTIFY.components, FORTIFY.graphics, FORTIFY.input));
+})(FORTIFY.components, FORTIFY.graphics, FORTIFY.input);

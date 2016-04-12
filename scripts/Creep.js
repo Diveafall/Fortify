@@ -182,16 +182,6 @@ FORTIFY.Creep = (function(Util) {
             
             return currGridLoc.row == nextCell.row && currGridLoc.col == nextCell.col;
         }
-        
-        that.update = function(elapsedTime, currGrid) {
-            // Steps for updating (TODO): 
-            // 1. Check if current destination cell is still open, if it is keep moving there
-            // 2. If not available or no current cell, do shortest path and find next cell
-            var grid = currGrid.getGridCopy();
-            if (needsNewNextCell(grid)) {
-                currCell = Util.gridLocationFromCoord(that.center.x, that.center.y);
-                var nextCell = nextStep(grid, currCell, that.endLoc);
-                updateNextCell(nextCell.row, nextCell.col);
                 
         that.update = function(elapsedTime) {
             // Steps for updating: 
@@ -236,4 +226,4 @@ FORTIFY.Creep = (function(Util) {
     return {
         Creep: Creep
     }
-}(FORTIFY.Util));
+})(FORTIFY.Util);

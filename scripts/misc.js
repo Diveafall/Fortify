@@ -26,7 +26,7 @@ FORTIFY.Clock = function(outputElement) {
             }
         },
         outputClock: function() {
-            output.innerHTML = time.minutes + (time.seconds < 10 ? ':0' : ':') + time.seconds;
+            //output.innerHTML = time.minutes + (time.seconds < 10 ? ':0' : ':') + time.seconds;
         }
     };
 };
