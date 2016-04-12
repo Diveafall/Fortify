@@ -105,7 +105,8 @@ FORTIFY.Creep = (function(Util) {
             path = [],
             currCell = {},
             startLoc = grid.creepSpawnLoc,
-            endLoc = grid.creepEndLoc;
+            endLoc = grid.creepEndLoc,
+            reachedEnd = false;
             
         spec.frame = {
             x: 0, y: 0, 
@@ -156,9 +157,16 @@ FORTIFY.Creep = (function(Util) {
             // Steps for updating: 
             // 1. Check if we have moved to a new cell
             // 2. If we have moved, remove current cell as target and switch to next
+            if (reachedEnd) {
+                return;
+            }
             var nextCell = path[0];
             if (didEnterNextCell(nextCell)) {
                 path.shift();
+                if (path.length === 0) {
+                    reachedEnd = true;
+                    return;
+                }
                 nextCell = path[0];
             }
             
