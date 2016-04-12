@@ -96,6 +96,9 @@ FORTIFY.model = (function(components, graphics, input) {
                 // TODO - add tower, call updatePath(grid) for all creeps
                 // make sure they have paths
                 // remove the placed tower if one creep has no path
+                
+                // Also - maybe create two temporary creeps that move in both directions
+                // If they don't have paths, don't allow
                 towers.push(grid.endPlacement(true));
                 
                 internalUpdate = updatePlaying;
@@ -130,7 +133,10 @@ FORTIFY.model = (function(components, graphics, input) {
 	//------------------------------------------------------------------
     function updatePlaying(elapsedTime) {
         for (var i = 0; i < creeps.length; i++) {
-            creeps[i].update(elapsedTime, grid);
+            if (creeps[i].update(elapsedTime, grid)) {
+                // Died or reached end, remove from grid
+            }
+            creeps[i].takeDamage(0.05);
         }
         timeToNextSpawn -= elapsedTime;
         if (timeToNextSpawn <= 0) {

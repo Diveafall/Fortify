@@ -2,6 +2,8 @@
 FORTIFY.Creep = (function(Util) {
     
     var Constants = {
+        get creepCellSize() { return 0.75; },
+        get creepHealth() { return 100; },
         get creepColor() { return "#0000FF"; },
         get creepSpeed() { return 0.03; }
     }
@@ -101,12 +103,15 @@ FORTIFY.Creep = (function(Util) {
     
     // Create new creep
     function Creep(grid) {
-        var spec = { cellSize: { horizCells: 0.5, vertiCells: 0.5 } },
+        var spec = { cellSize: { horizCells: Constants.creepCellSize, vertiCells: Constants.creepCellSize } },
+            health = Constants.creepHealth,
             path = [],
             currCell = {},
             startLoc = grid.creepSpawnLoc,
             endLoc = grid.creepEndLoc,
-            reachedEnd = false;
+            dead = false,
+            reachedEnd = false,
+            isSlowed = false;
             
         spec.frame = {
             x: 0, y: 0, 
@@ -119,7 +124,7 @@ FORTIFY.Creep = (function(Util) {
         // Size values for creep
         that.creepColor = Constants.creepColor;
         that.cellSize = spec.cellSize;
-        that.radius = that.height;
+        that.radius = that.height / 2;
         that.center = Util.pointCoordFromLocation(grid.creepSpawnLoc.row, grid.creepSpawnLoc.col);
         
         // return the total number of cells required for this creep
@@ -128,6 +133,26 @@ FORTIFY.Creep = (function(Util) {
         // Distance formula
         var calcDistance = function(x1, x2, y1, y2) {
             return Math.sqrt(Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2));
+        }
+        
+        // Take damage from projectile
+        that.takeDamage = function(damage) {
+            health -= damage;
+            if (health <= 0) {
+                dead = true;
+            }
+        }
+        
+        that.slowCreep = function() {
+            isSlowed = true;
+        }
+        
+        that.healthPercentage = function() {
+            var pct = health / Constants.creepHealth;
+            if (pct < 0) {
+                pct = 0;
+            }
+            return pct;
         }
         
         // Only called on init and when tower is placed
@@ -157,15 +182,15 @@ FORTIFY.Creep = (function(Util) {
             // Steps for updating: 
             // 1. Check if we have moved to a new cell
             // 2. If we have moved, remove current cell as target and switch to next
-            if (reachedEnd) {
-                return;
+            if (reachedEnd || dead) {
+                return true;
             }
             var nextCell = path[0];
             if (didEnterNextCell(nextCell)) {
                 path.shift();
                 if (path.length === 0) {
                     reachedEnd = true;
-                    return;
+                    return true;
                 }
                 nextCell = path[0];
             }
@@ -175,6 +200,9 @@ FORTIFY.Creep = (function(Util) {
             
             // Scale distance so we move a constant amount
             var updateMoveDistance = Constants.creepSpeed * elapsedTime;
+            if (isSlowed) {
+                updateMoveDistance *= 0.5;
+            }
             var remainingDistance = calcDistance(moveVector.x, 0, moveVector.y, 0);
             var moveRatio = updateMoveDistance / remainingDistance;
             
@@ -183,6 +211,7 @@ FORTIFY.Creep = (function(Util) {
             
             // Update location
             that.center = {x: that.center.x + actualMoveVector.x, y: that.center.y + actualMoveVector.y};
+            return false;
         }
         
         return that;
