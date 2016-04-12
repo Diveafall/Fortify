@@ -107,12 +107,13 @@ FORTIFY.Creep = (function(Util) {
             health = Constants.creepHealth,
             path = [],
             currCell = {},
-            startLoc = grid.creepSpawnLoc,
-            endLoc = grid.creepEndLoc,
+            myPath = grid.getCreepPath(),
+            spawnLoc = myPath.spawnLoc,
+            endLoc = myPath.endLoc,
             dead = false,
             reachedEnd = false,
             isSlowed = false;
-            
+
         spec.frame = {
             x: 0, y: 0, 
             width: spec.cellSize.horizCells * FORTIFY.Constants.gridCellDimensions.width, 
@@ -125,7 +126,7 @@ FORTIFY.Creep = (function(Util) {
         that.creepColor = Constants.creepColor;
         that.cellSize = spec.cellSize;
         that.radius = that.height / 2;
-        that.center = Util.pointCoordFromLocation(grid.creepSpawnLoc.row, grid.creepSpawnLoc.col);
+        that.center = Util.pointCoordFromLocation(spawnLoc.row, spawnLoc.col);
         
         // return the total number of cells required for this creep
         that.totalCells = function() { return spec.cellSize.horizCells * spec.cellSize.vertiCells; };
