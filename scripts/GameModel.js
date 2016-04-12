@@ -8,7 +8,7 @@ FORTIFY.model = (function(components, graphics, input) {
         internalUpdate,
 		internalRender,
 		keyboard = input.Keyboard(),
-        timeToNextSpawn = 5000, // temp to spawn a new creep every second
+        timeToNextSpawn = 0,
         internalMouseMove,
         internalMouseClick,
 		keyboard = input.Keyboard();
@@ -96,6 +96,12 @@ FORTIFY.model = (function(components, graphics, input) {
 	function placementMouseClick(event) {
         if (grid.isPlacing()) {
             if (grid.isValid()) {
+                // TODO - add tower, call updatePath(grid) for all creeps
+                // make sure they have paths
+                // remove the placed tower if one creep has no path
+                
+                // Also - maybe create two temporary creeps that move in both directions
+                // If they don't have paths, don't allow
                 towers.push(grid.endPlacement(true));
                 
                 internalUpdate = updatePlaying;
@@ -132,16 +138,53 @@ FORTIFY.model = (function(components, graphics, input) {
         clock.update();
         for (var i = 0; i < creeps.length; i++) {
             creeps[i].update(elapsedTime, grid);
+	// Update creeps
+	//
+	//------------------------------------------------------------------
+    function updateCreeps(elapsedTime) {
+        var i,
+            creepsToRemove = [];
+        for (i = 0; i < creeps.length; i++) {
+            if (creeps[i].update(elapsedTime, grid)) {
+                // Died or reached end, remove
+                if (creeps[i].reachedEnd()) {
+                    // TODO - Remove one health from player
+                } else {
+                    // TODO - Add points, render score floating from creep death
+                }
+                creepsToRemove.push(i);
+            }
         }
+        
+        for (i = creepsToRemove.length; i--; i >= 0) {
+            creeps.splice(creepsToRemove[i], 1);
+        }
+        
         timeToNextSpawn -= elapsedTime;
         if (timeToNextSpawn <= 0) {
             creeps.push(components.Creep(grid));
             timeToNextSpawn = 5000;
         }
-        for (var i = 0; i < towers.length; ++i) {
+    }
+    
+    //------------------------------------------------------------------
+	//
+	// Update state of the game while playing
+	//
+	//------------------------------------------------------------------
+    function updatePlaying(elapsedTime) {
+        var i;
+            
+        // Creep updates
+        updateCreeps(elapsedTime);
+        
+        // Tower updates
+        for (i = 0; i < towers.length; ++i) {
             towers[i].update(elapsedTime);
         }
-        for (var i = projectiles.length - 1; i >= 0; i--) {
+        
+        // Projectile updates
+        for (i = projectiles.length - 1; i >= 0; i--) {
             projectiles[i].update(elapsedTime);
             if (!projectiles[i].isWithinBounds()) {
                 projectiles.splice(i, 1);
@@ -159,6 +202,9 @@ FORTIFY.model = (function(components, graphics, input) {
         for (var i = 0; i < towers.length; ++i) {
             graphics.drawTower(towers[i], false);
         }
+        for (var i = 0; i < creeps.length; i++) {
+            graphics.drawCreep(creeps[i]);
+        }
     }
     
     //------------------------------------------------------------------
@@ -173,6 +219,9 @@ FORTIFY.model = (function(components, graphics, input) {
         }
         for (var i = 0; i < projectiles.length; ++i) {
             graphics.drawProjectile(projectiles[i]);
+        }
+        for (var i = 0; i < creeps.length; i++) {
+            graphics.drawCreep(creeps[i]);
         }
 	}
 
@@ -192,9 +241,6 @@ FORTIFY.model = (function(components, graphics, input) {
 	//------------------------------------------------------------------
 	function render() {
 		internalRender();
-        for (var i = 0; i < creeps.length; i++) {
-            graphics.drawCreep(creeps[i]);
-        }
 	}
 
 	return {

@@ -93,9 +93,33 @@ FORTIFY.components = (function(Creep) {
         
         that.numberOfCols = numberOfCols;
         that.numberOfRows = numberOfRows;
-        that.creepSpawnLoc = loc(Math.floor(numberOfRows/2), 0);
-        that.creepEndLoc = loc(Math.floor(numberOfRows/2), numberOfCols-1);
         that.getGridCopy = function() { return FORTIFY.Util.resetGridVisited(grid); };
+        
+        // Possible spawn locations
+        var left = loc(Math.floor(numberOfRows/2), 0),
+            right = loc(Math.floor(numberOfRows/2), numberOfCols-1),
+            top = loc(0, Math.floor(numberOfCols/2)),
+            bottom = loc(numberOfRows-1, Math.floor(numberOfCols/2));
+        that.getCreepPath = function() {
+            var that = {};
+            
+            var pathNumber = Math.floor(Math.random() * 4);
+            if (pathNumber === 0) {
+                that.spawnLoc = left;
+                that.endLoc = right;
+            } else if (pathNumber === 1) {
+                that.spawnLoc = right;
+                that.endLoc = left;
+            } else if (pathNumber === 2) {
+                that.spawnLoc = top;
+                that.endLoc = bottom;
+            } else {
+                that.spawnLoc = bottom;
+                that.endLoc = top;
+            }
+            
+            return that;
+        }
         
         // Return (row, col) location from (x,y) coordinate
         function gridLocationFromCoord(x, y) {

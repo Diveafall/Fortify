@@ -181,6 +181,15 @@ FORTIFY.graphics = (function() {
         context.arc(creep.center.x, creep.center.y, creep.radius, 0, 2 * Math.PI);
         context.fill();
         context.restore();
+        
+        // Health bar
+        context.save();
+        context.strokeStyle = 'black';
+        context.fillStyle = 'green';
+        var barHeight = creep.height / 3;
+        context.strokeRect(creep.origin.x, creep.origin.y - (barHeight * 2), creep.width, barHeight);
+        context.fillRect(creep.origin.x, creep.origin.y - (barHeight * 2), creep.width * creep.healthPercentage(), barHeight);
+        context.restore();
     }
     
 
