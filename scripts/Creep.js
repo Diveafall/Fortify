@@ -156,7 +156,6 @@ FORTIFY.Creep = (function(Util) {
             if (needsNewNextCell(grid)) {
                 currCell = Util.gridLocationFromCoord(that.center.x, that.center.y);
                 var nextCell = nextStep(grid, currCell, that.endLoc);
-                console.log(nextCell);
                 updateNextCell(nextCell.row, nextCell.col);
             }
             

@@ -4,6 +4,7 @@ FORTIFY.model = (function(components, graphics, input) {
         towers = [],
         creeps = [],
         projectiles = [],
+        clock,
         internalUpdate,
 		internalRender,
 		keyboard = input.Keyboard(),
@@ -21,6 +22,8 @@ FORTIFY.model = (function(components, graphics, input) {
 	function initialize() {
         console.log('game model initialization');
         grid = components.GameGrid({ frame: graphics.canvasFrame() });
+        clock = FORTIFY.Clock();
+        clock.start(document.getElementById('time-label'));
         
         graphics.getCanvas().onclick = function(event) { internalMouseClick(event); };
         graphics.getCanvas().onmousemove = function(event) { internalMouseMove(event); };
@@ -126,6 +129,7 @@ FORTIFY.model = (function(components, graphics, input) {
 	//
 	//------------------------------------------------------------------
     function updatePlaying(elapsedTime) {
+        clock.update();
         for (var i = 0; i < creeps.length; i++) {
             creeps[i].update(elapsedTime, grid);
         }
@@ -163,6 +167,7 @@ FORTIFY.model = (function(components, graphics, input) {
 	//
 	//------------------------------------------------------------------
 	function renderPlaying() {
+        clock.outputClock();
         for (var i = 0; i < towers.length; ++i) {
             graphics.drawTower(towers[i], false);
         }
