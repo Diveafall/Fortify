@@ -93,6 +93,9 @@ FORTIFY.model = (function(components, graphics, input) {
 	function placementMouseClick(event) {
         if (grid.isPlacing()) {
             if (grid.isValid()) {
+                // TODO - add tower, call updatePath(grid) for all creeps
+                // make sure they have paths
+                // remove the placed tower if one creep has no path
                 towers.push(grid.endPlacement(true));
                 
                 internalUpdate = updatePlaying;

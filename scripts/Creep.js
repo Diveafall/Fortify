@@ -74,6 +74,16 @@ FORTIFY.Creep = (function(Util) {
                 }
             }
         }
+        // Give XY coordinates for each step on path
+        if (shortestPath != null) {
+            for (i = 0; i < shortestPath.length; i++) {
+                var curr = shortestPath[i];
+                var xyForCell = Util.pointCoordFromLocation(curr.row, curr.col);
+                
+                shortestPath[i].x = xyForCell.x;
+                shortestPath[i].y = xyForCell.y;
+            }
+        }
 
         return shortestPath;
     }
@@ -91,7 +101,12 @@ FORTIFY.Creep = (function(Util) {
     
     // Create new creep
     function Creep(grid) {
-        var spec = { cellSize: { horizCells: 0.5, vertiCells: 0.5 } };
+        var spec = { cellSize: { horizCells: 0.5, vertiCells: 0.5 } },
+            path = [],
+            currCell = {},
+            startLoc = grid.creepSpawnLoc,
+            endLoc = grid.creepEndLoc;
+            
         spec.frame = {
             x: 0, y: 0, 
             width: spec.cellSize.horizCells * FORTIFY.Constants.gridCellDimensions.width, 
@@ -100,68 +115,55 @@ FORTIFY.Creep = (function(Util) {
         
         var that = FORTIFY.View(spec);
         
+        // Size values for creep
         that.creepColor = Constants.creepColor;
-        
         that.cellSize = spec.cellSize;
         that.radius = that.height;
+        that.center = Util.pointCoordFromLocation(grid.creepSpawnLoc.row, grid.creepSpawnLoc.col);
         
-        that.center = Util.pointCoordFromLocation(grid.creepSpawnLoc.row, 0);
-        
-        that.endLoc = grid.creepEndLoc;
-        
-        // return the total number of cells required for this tower
+        // return the total number of cells required for this creep
         that.totalCells = function() { return spec.cellSize.horizCells * spec.cellSize.vertiCells; };
         
-        // distance formula
+        // Distance formula
         var calcDistance = function(x1, x2, y1, y2) {
             return Math.sqrt(Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2));
         }
         
-        var currCell = Util.loc(grid.creepSpawnLoc.row, grid.creepSpawnLoc.col);
-        
-        var updateNextCell = function(row, col) {
-            var nextCoord = Util.pointCoordFromLocation(row, col);
-            that.nextCell = {
-                x: nextCoord.x,
-                y: nextCoord.y,
-                row: row,
-                col: col
-            };
-        }
-        updateNextCell(that.endLoc.row, that.endLoc.col);
-        
-        var needsNewNextCell = function(grid) {
-            var currGridLoc = Util.gridLocationFromCoord(that.center.x, that.center.y);
+        // Only called on init and when tower is placed
+        // return true or false based on if we stil have a path
+        that.updatePath = function(currGrid) {
+            var gridCopy = currGrid.getGridCopy();
+            var currCell = Util.gridLocationFromCoord(that.center.x, that.center.y);
             
-            // Check if grid is still available and we haven't moved to a new cell already
-            if (grid[that.nextCell.row][that.nextCell.col].isAvailable() 
-                && currGridLoc.row != that.nextCell.row
-                && currGridLoc.col != that.nextCell.col) {
+            var newPath = shortestPath(gridCopy, currCell, endLoc);
+            if (newPath != null) {
+                path = newPath;
+                return true;
+            } else {
                 return false;
             }
-            return true;
+        }
+        that.updatePath(grid);
+        
+        // Check if we have entered the target cell
+        var didEnterNextCell = function(nextCell) {
+            var currGridLoc = Util.gridLocationFromCoord(that.center.x, that.center.y);
+            
+            return currGridLoc.row == nextCell.row && currGridLoc.col == nextCell.col;
         }
         
-        // test function       
-        // var testLocs = [Util.loc(0,0), Util.loc(1,1), Util.loc(21, 43)];
-        // for (var i = 0; i < testLocs.length; i++) {
-        //     console.log(shortestPath(grid.getGridCopy(), testLocs[i], that.endLoc));
-        // }
-        
-        that.update = function(elapsedTime, currGrid) {
-            // Steps for updating (TODO): 
-            // 1. Check if current destination cell is still open, if it is keep moving there
-            // 2. If not available or no current cell, do shortest path and find next cell
-            var grid = currGrid.getGridCopy();
-            if (needsNewNextCell(grid)) {
-                currCell = Util.gridLocationFromCoord(that.center.x, that.center.y);
-                var nextCell = nextStep(grid, currCell, that.endLoc);
-                console.log(nextCell);
-                updateNextCell(nextCell.row, nextCell.col);
+        that.update = function(elapsedTime) {
+            // Steps for updating: 
+            // 1. Check if we have moved to a new cell
+            // 2. If we have moved, remove current cell as target and switch to next
+            var nextCell = path[0];
+            if (didEnterNextCell(nextCell)) {
+                path.shift();
+                nextCell = path[0];
             }
             
             // Direction to move
-            var moveVector = {x: that.nextCell.x - that.origin.x, y: that.nextCell.y - that.origin.y};
+            var moveVector = {x: nextCell.x - that.center.x, y: nextCell.y - that.center.y};
             
             // Scale distance so we move a constant amount
             var updateMoveDistance = Constants.creepSpeed * elapsedTime;
@@ -173,7 +175,6 @@ FORTIFY.Creep = (function(Util) {
             
             // Update location
             that.center = {x: that.center.x + actualMoveVector.x, y: that.center.y + actualMoveVector.y};
-            //console.log(that.origin.x + " " + that.origin.y);
         }
         
         return that;
