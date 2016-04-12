@@ -5,7 +5,7 @@ FORTIFY.Creep = (function(Util) {
         get creepCellSize() { return 0.75; },
         get creepHealth() { return 100; },
         get creepColor() { return "#0000FF"; },
-        get creepSpeed() { return 0.03; }
+        get creepSpeed() { return 0.05; }
     }
     
     // Check if cell is open
@@ -154,6 +154,10 @@ FORTIFY.Creep = (function(Util) {
                 pct = 0;
             }
             return pct;
+        }
+        
+        that.reachedEnd = function() {
+            return reachedEnd;
         }
         
         // Only called on init and when tower is placed

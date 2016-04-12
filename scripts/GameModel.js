@@ -7,7 +7,7 @@ FORTIFY.model = (function(components, graphics, input) {
         internalUpdate,
 		internalRender,
 		keyboard = input.Keyboard(),
-        timeToNextSpawn = 5000, // temp to spawn a new creep every second
+        timeToNextSpawn = 0,
         internalMouseMove,
         internalMouseClick,
 		keyboard = input.Keyboard();
@@ -128,25 +128,53 @@ FORTIFY.model = (function(components, graphics, input) {
     
     //------------------------------------------------------------------
 	//
-	// Update state of the game while playing
+	// Update creeps
 	//
 	//------------------------------------------------------------------
-    function updatePlaying(elapsedTime) {
-        for (var i = 0; i < creeps.length; i++) {
+    function updateCreeps(elapsedTime) {
+        var i,
+            creepsToRemove = [];
+        for (i = 0; i < creeps.length; i++) {
             if (creeps[i].update(elapsedTime, grid)) {
-                // Died or reached end, remove from grid
+                // Died or reached end, remove
+                if (creeps[i].reachedEnd()) {
+                    // TODO - Remove one health from player
+                } else {
+                    // TODO - Add points, render score floating from creep death
+                }
+                creepsToRemove.push(i);
             }
-            creeps[i].takeDamage(0.05);
         }
+        
+        for (i = creepsToRemove.length; i--; i >= 0) {
+            creeps.splice(creepsToRemove[i], 1);
+        }
+        
         timeToNextSpawn -= elapsedTime;
         if (timeToNextSpawn <= 0) {
             creeps.push(components.Creep(grid));
             timeToNextSpawn = 5000;
         }
-        for (var i = 0; i < towers.length; ++i) {
+    }
+    
+    //------------------------------------------------------------------
+	//
+	// Update state of the game while playing
+	//
+	//------------------------------------------------------------------
+    function updatePlaying(elapsedTime) {
+        var i;
+            
+        // Creep updates
+        updateCreeps(elapsedTime);
+        
+        // Tower updates
+        for (i = 0; i < towers.length; ++i) {
             towers[i].update(elapsedTime);
         }
-        for (var i = projectiles.length - 1; i >= 0; i--) {
+        
+        // Projectile updates
+        for (i = projectiles.length - 1; i >= 0; i--) {
             projectiles[i].update(elapsedTime);
             if (!projectiles[i].isWithinBounds()) {
                 projectiles.splice(i, 1);
