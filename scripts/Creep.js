@@ -144,6 +144,11 @@ FORTIFY.Creep = (function(Util) {
             }
         }
         
+        // returns true if dead, false otherwise
+        that.isDead = function() {
+            return dead;
+        };
+        
         that.slowCreep = function() {
             isSlowed = true;
         }
@@ -174,6 +179,7 @@ FORTIFY.Creep = (function(Util) {
                 return false;
             }
         }
+        
         that.updatePath(grid);
         
         // Check if we have entered the target cell
@@ -198,7 +204,6 @@ FORTIFY.Creep = (function(Util) {
                     return true;
                 }
                 nextCell = path[0];
-                
             }
             
             // Direction to move

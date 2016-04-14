@@ -42,17 +42,24 @@ FORTIFY.model = (function(components, graphics, input) {
 	// A tower has been selected from the Tower Store
 	//
 	//------------------------------------------------------------------
-    function towerPurchased(TowerType) {        
-        grid.beginPlacement(TowerType({
-            containerFrame: grid.frame,
-            projectiles: projectiles
-        }));
+    function towerPurchased(TowerType) {  
+        var tower = TowerType({ containerFrame: grid.frame, projectiles: projectiles }); // create the tower      
+        grid.beginPlacement(tower); // pass it to grid for placement setup
+        FORTIFY.StatsPanel.towerSelected(tower, true); // show the new tower on stats panel
         
+        // switch to placing
         internalRender = renderPlacing;
         internalUpdate = updatePlacing;
         
         internalMouseMove = placementMouseMove;
         internalMouseClick = placementMouseClick;
+    }
+    
+    function towerSold(tower) {
+        grid.removeTowerFromGrid(tower);
+        var index = towers.indexOf(tower);
+        towers.splice(index, 1);
+        // TODO: ADD GOLD TO TREASURY
     }
 
 	//------------------------------------------------------------------
@@ -79,13 +86,6 @@ FORTIFY.model = (function(components, graphics, input) {
 	//
 	//------------------------------------------------------------------
 	function playingMouseMove(event) {
-        var point = { x: event.offsetX, y: event.offsetY };
-        for (var i = 0; i < towers.length; ++i) {
-            towers[i].turn(point);
-        }
-        for (var i = 0; i < projectiles.length; ++i) {
-            if (projectiles[i].setTarget) { projectiles[i].setTarget(point); }
-        }
 	}
     
     //------------------------------------------------------------------
@@ -102,8 +102,27 @@ FORTIFY.model = (function(components, graphics, input) {
                 
                 // Also - maybe create two temporary creeps that move in both directions
                 // If they don't have paths, don't allow
-                towers.push(grid.endPlacement(true));
                 
+                // places the tower in the grid, remembers it
+                var tower = grid.endPlacement(true);
+                
+                for (var i = 0; i < creeps.length; ++i) {
+                    if (!creeps[i].updatePath(grid)) { // one of the creeps no longer has a path
+                        // TODO: Notify of failure
+                        console.log('path block');
+                        
+                        // remove the tower from grid
+                        grid.removeTowerFromGrid(tower);
+                        // stop the function
+                        return;
+                    }
+                }
+                
+                // if we got here, then all creeps have paths
+                towers.push(tower); // push tower to container
+                FORTIFY.StatsPanel.hide(); // hide the stats panel
+                
+                // switch to playing
                 internalUpdate = updatePlaying;
                 internalRender = renderPlaying;
                 
@@ -119,6 +138,14 @@ FORTIFY.model = (function(components, graphics, input) {
 	//
 	//------------------------------------------------------------------
 	function playingMouseClick(event) {
+        var point = { x: event.offsetX, y: event.offsetY };
+        for (var i = 0; i < towers.length; ++i) {
+            if (towers[i].doesContain(point)) {
+                FORTIFY.StatsPanel.towerSelected(towers[i]);
+                return;
+            }
+        }
+        FORTIFY.StatsPanel.towerSelected(undefined);
 	}
     
     //------------------------------------------------------------------
@@ -156,7 +183,7 @@ FORTIFY.model = (function(components, graphics, input) {
         timeToNextSpawn -= elapsedTime;
         if (timeToNextSpawn <= 0) {
             creeps.push(components.Creep(grid));
-            timeToNextSpawn = 5000;
+            timeToNextSpawn = 4000;
         }
     }
     
@@ -179,8 +206,16 @@ FORTIFY.model = (function(components, graphics, input) {
         // Projectile updates
         for (i = projectiles.length - 1; i >= 0; i--) {
             projectiles[i].update(elapsedTime);
-            if (!projectiles[i].isWithinBounds()) {
-                projectiles.splice(i, 1);
+            if (!projectiles[i].isWithinBounds()) { // if projectile is out of its bounds
+                projectiles.splice(i, 1); // remove it
+            } else {
+                for (var j = 0; j < creeps.length; ++j) { // projectile hasn't died let's see if it has collided with any creep
+                    if (projectiles[i].didCollideWith(creeps[j])) { // if they collided
+                        creeps[j].takeDamage(10); // creep takes damage
+                        projectiles.splice(i, 1); // remove projectile
+                        break;
+                    }
+                }
             }
         }
     }
@@ -241,6 +276,8 @@ FORTIFY.model = (function(components, graphics, input) {
 		processInput: processInput,
 		update: update,
 		render: render,
-        towerPurchased: towerPurchased
+        towerPurchased: towerPurchased,
+        towerSold: towerSold,
+        creeps: creeps
 	};
-})(FORTIFY.components, FORTIFY.graphics, FORTIFY.input);
+}) (FORTIFY.components, FORTIFY.graphics, FORTIFY.input);

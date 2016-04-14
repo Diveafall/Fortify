@@ -156,13 +156,39 @@ FORTIFY.View = function(specs) {
         }
     });
     
-    that.viewWillAppear = function() {};
+    Object.defineProperty(that, 'left', {
+        get: function() { return that.frame.left; }
+    });
     
-    that.onKeyUp = function(event) {};
-    that.onKeyDown = function(event) {};
+    Object.defineProperty(that, 'right', {
+        get: function() { return that.frame.right; }
+    });
     
-    that.update = function(elapsed) {};
-    that.render = function(context) {};
+    Object.defineProperty(that, 'top', {
+        get: function() { return that.frame.top; }
+    });
+    
+    Object.defineProperty(that, 'bottom', {
+        get: function() { return that.frame.bottom; }
+    });
+    
+    that.didCollideWith = function(view) {
+		return !(
+			view.left > that.right ||
+			view.right < that.left ||
+			view.top > that.bottom ||
+			view.bottom < that.top
+		);
+	};
+    
+    that.doesContain = function(point) {
+        return !(
+            point.x < that.left ||
+            point.x > that.right ||
+            point.y < that.top ||
+            point.y > that.bottom
+        );
+    };
     
     return that;
 }

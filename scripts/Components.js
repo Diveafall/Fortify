@@ -6,27 +6,11 @@ FORTIFY.components = (function(Creep) {
 	var Constants = {
         get gridCellDimentions() { return { width: 15, height: 15 }; },
         get gridCellBorder() { return 1; },
-        get gridAvailableCellColor() { return 'rgba(0, 255, 0, 1)'; },
+        get gridAvailableCellColor() { return 'rgba(173, 216, 230, 1)'; },
         get gridUnavailableCellColor() { return 'rgba(255, 0, 0, 1)'; },
         get gridHighlightedCellColor() { return 'rgba(75, 0, 130, 1)'; },
         get gridUnavailableHighlightedColor() { return 'rgba(255, 0, 255, 1)'; }
 	};
-
-	//------------------------------------------------------------------
-	//
-	// Tests to see if two rectangles intersect.  If they do, true is returned,
-	// false otherwise.
-	// Adapted from: http://stackoverflow.com/questions/2752349/fast-rectangle-to-rectangle-intersection
-	//
-	//------------------------------------------------------------------
-	function intersectRectangles(r1, r2) {
-		return !(
-			r2.left > r1.right ||
-			r2.right < r1.left ||
-			r2.top > r1.bottom ||
-			r2.bottom < r1.top
-		);
-	}
     
     //------------------------------------------------------------------
 	//
@@ -66,6 +50,7 @@ FORTIFY.components = (function(Creep) {
                         highlight: function() { highlighted = true; },
                         discount: function() { highlighted = false; },
                         occupy: function() { available = false; },
+                        vacant: function() { available = true; },
                         visited: function() { visited = true; },
                         resetVisited: function() { visited = false; },
                         isAvailable: function() { return available; },
@@ -175,6 +160,9 @@ FORTIFY.components = (function(Creep) {
                     for (var i = 0; i < currentSelection.highlightedCells.length; ++i) // highlighted cell are now officially occupied by a tower
                         currentSelection.highlightedCells[i].occupy();
                         
+                    // tower now knows the cells it's occupying
+                    addedTower.occupiedCells = currentSelection.highlightedCells.slice();
+                        
                     discountHighlightedCells(); // "unhighlight" highlighted cells
                     currentSelection.selectedTower = undefined; // remove tower from storage
                     currentSelection.highlightedCells.length = 0; // empty highlighted cells' array
@@ -186,6 +174,13 @@ FORTIFY.components = (function(Creep) {
                 }
             }
         }
+        
+        // removes tower from grid
+        that.removeTowerFromGrid = function(tower) {
+            for (var i = 0; i < tower.occupiedCells.length; ++i) {
+                tower.occupiedCells[i].vacant();
+            }
+        };
         
         // returns true if tower placement is allowed
         that.isValid = function() {
@@ -253,132 +248,6 @@ FORTIFY.components = (function(Creep) {
         };
         
         return that;
-    }
-    
-    //------------------------------------------------------------------
-	//
-	// Represents a generic tower
-    // spec must include
-    //      frame: x, y, width, and height
-    //      radius: number
-    //      cellSize: Object containing vertical and horizontal number of cells this tower requires
-	//
-	//------------------------------------------------------------------
-    function Tower(spec) {
-        var that = FORTIFY.View(spec), fireTimer = 0, currentTarget = undefined;
-        
-        that.baseColor = '#808080';
-        that.cannonColor = '#000000';
-        
-        that.cannonLength = that.height * 0.5;
-        that.cannonWidth = that.width * 0.1;
-        
-        that.cellSize = spec.cellSize;
-        that.radius = that.height / 3;
-        
-        // rotation
-        that.angle = 0;
-        that.targetAngle = 0;
-        that.rotationSpeed = 2 * Math.PI / 1000; // one rotation per second
-        
-        // firing
-        that.shootRadius = that.height * 2;
-        that.shootRate = 1000 / 5; // once per second
-        that.fire = function() {
-            
-            var newProjectile = spec.Projectile({
-                rotation: that.angle, // current angle of the tower
-                moveRate: 300 / 1000, // pixels per second
-                containerFrame: that.containerFrame, // projectile can see the frame it's in
-                frame: {
-                    x: 0,
-                    y: 0,
-                    width: that.width * 0.3,
-                    height: that.cannonWidth
-                }
-            });
-            
-            newProjectile.center = that.center;
-            newProjectile.setTarget && newProjectile.setTarget(currentTarget);
-            
-            spec.projectiles.push(newProjectile);
-        };
-        
-        // helper function: returns true if number is within range of the pivot
-        function isWithinRange(num, pivot, range) {
-            if (num >= pivot - range && num <= pivot + range) return true;
-            return false;
-        }
-        
-        // return the total number of cells required for this tower
-        that.totalCells = function() { return spec.cellSize.horizCells * spec.cellSize.vertiCells; };
-        
-        // set target angle to angle between my center and given point
-        that.turn = function(point) {
-            that.targetAngle = that.center.angle(point);
-            if (that.shootRadius > that.center.distance(point)) {
-                currentTarget = point;
-            } else {
-                currentTarget = undefined;
-            }
-        }
-        
-        that.update = function(elapsedTime) {
-            // HANDLING ROTATION
-            // if I'm not within specific range of my target
-            if (!isWithinRange(that.angle, that.targetAngle, 0.4)) {
-                // find the distance between me and my target
-                var delta = Math.abs(that.angle - that.targetAngle);
-                // if my angle comes before target angle
-                if (that.angle <= that.targetAngle) {
-                    // if distance is less than PI go clockwise, otherwise: counterclockwise
-                    that.angle += (delta > Math.PI ? -1 : 1) * that.rotationSpeed * elapsedTime;
-                } else {
-                    // if distance is less than PI go counterclockwise, otherwise: clockwise
-                    that.angle += (delta > Math.PI ? 1 : -1) * that.rotationSpeed * elapsedTime;
-                }
-            }
-            // if I'm in range of my target
-            else {
-                that.angle = that.targetAngle;
-                if (currentTarget) {
-                    // HANDLING THE FIRING
-                    fireTimer += elapsedTime;
-                    if (fireTimer >= that.shootRate) { // time to shoot
-                        that.fire(); // FIRE!
-                        fireTimer = 0; // reset timer
-                    }
-                }
-            }
-            
-            // make sure we stay inside these bounds [0, 2 * PI]
-            if (that.angle > 2 * Math.PI) that.angle = 0;
-            if (that.angle < 0) that.angle += 2 * Math.PI;
-        };
-        
-        return that;
-    }
-    
-    function GenericTower(spec) {
-        var horizCells = 3, vertiCells = 3, width = horizCells * Constants.gridCellDimentions.width, height = vertiCells * Constants.gridCellDimentions.height;
-        return Tower({ 
-            cellSize: { horizCells: horizCells, vertiCells: vertiCells }, 
-            frame: { x: -width, y: -height, width: width, height: height },
-            projectiles: spec.projectiles,
-            containerFrame: spec.containerFrame,
-            Projectile: Projectile
-        });
-    }
-    
-    function MissileTower(spec) {
-        var horizCells = 3, vertiCells = 3, width = horizCells * Constants.gridCellDimentions.width, height = vertiCells * Constants.gridCellDimentions.height;
-        return Tower({ 
-            cellSize: { horizCells: horizCells, vertiCells: vertiCells }, 
-            frame: { x: -width, y: -height, width: width, height: height },
-            projectiles: spec.projectiles,
-            containerFrame: spec.containerFrame, 
-            Projectile: GuidedProjectile
-        });
     }
 
     /**
@@ -450,9 +319,7 @@ FORTIFY.components = (function(Creep) {
 	return {
 		Constants: Constants,
         GameGrid: GameGrid,
-        Tower: Tower,
         Creep: Creep.Creep,
-        GenericTower: GenericTower,
-        MissileTower: MissileTower
+        Projectile: Projectile
 	};
 }(FORTIFY.Creep));
