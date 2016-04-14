@@ -197,10 +197,6 @@ FORTIFY.Creep = (function(Util) {
                 return true;
             }
             var nextCell = path[0];
-            if (typeof nextCell === 'undefined') {
-                console.log("Undefined path", path);
-                return false;
-            }
             if (didEnterNextCell(nextCell)) {
                 path.shift();
                 if (path.length === 0) {

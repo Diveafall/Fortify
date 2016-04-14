@@ -113,21 +113,13 @@ FORTIFY.model = (function(components, graphics, input) {
                 var tower = grid.endPlacement(true),
                     towerWasValid = true;
                     
-                // Test for entire path from left to right and top to bottom
+                // Test entire path from left to right and top to bottom
                 towerWasValid = testCreepLeftRight.updatePath(grid) 
                     && testCreepTopBottom.updatePath(grid);
                 
                 // Check each creep to ensure they still have paths
                 for (var i = 0; i < creeps.length && towerWasValid; ++i) {
-                    if (!creeps[i].updatePath(grid)) { // one of the creeps no longer has a path
-                        // TODO: Notify of failure
-                        console.log('path block');
-                        
-                        // remove the tower from grid
-                        grid.removeTowerFromGrid(tower);
-                        
-                        towerWasValid = false;
-                    }
+                    towerWasValid = creeps[i].updatePath(grid);
                 }
                 
                 if (towerWasValid) {
@@ -135,10 +127,16 @@ FORTIFY.model = (function(components, graphics, input) {
                     towers.push(tower); // push tower to container
                     FORTIFY.StatsPanel.hide(); // hide the stats panel
                 } else {
+                    // remove the tower from the grid
+                    grid.removeTowerFromGrid(tower);
+                    
                     // Redo all paths for creeps
                     for (var i = 0; i < creeps.length; i++) {
                         creeps[i].updatePath(grid);
                     }
+                    
+                    // TODO: Notify user of bad placement
+                    console.log("Invalid tower placement!");
                 }
                 
                 // switch to playing
