@@ -108,7 +108,7 @@ FORTIFY.model = (function(components, graphics, input) {
 	//------------------------------------------------------------------
 	function placementMouseClick(event) {
         if (grid.isPlacing()) {
-            if (grid.isValid()) {
+            if (grid.isValid()) { // grid can accomodate this tower
                 // places the tower in the grid, remembers it
                 var tower = grid.endPlacement(true),
                     towerWasValid = true;
@@ -126,6 +126,13 @@ FORTIFY.model = (function(components, graphics, input) {
                     // if we got here, then all creeps have paths
                     towers.push(tower); // push tower to container
                     FORTIFY.StatsPanel.hide(); // hide the stats panel
+                    
+                    // switch to playing
+                    internalUpdate = updatePlaying;
+                    internalRender = renderPlaying;
+                    
+                    internalMouseMove = playingMouseMove;
+                    internalMouseClick = playingMouseClick;
                 } else {
                     // remove the tower from the grid
                     grid.removeTowerFromGrid(tower);
@@ -137,14 +144,10 @@ FORTIFY.model = (function(components, graphics, input) {
                     
                     // TODO: Notify user of bad placement
                     console.log("Invalid tower placement!");
+                    
+                    // continue tower placement
+                    grid.beginPlacement(tower);
                 }
-                
-                // switch to playing
-                internalUpdate = updatePlaying;
-                internalRender = renderPlaying;
-                
-                internalMouseMove = playingMouseMove;
-                internalMouseClick = playingMouseClick;
             }
         }
 	}
