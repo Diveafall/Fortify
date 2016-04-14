@@ -102,12 +102,13 @@ FORTIFY.Creep = (function(Util) {
     }
     
     // Create new creep
-    function Creep(grid) {
+    // If whichPath is not specified, generate a random direction to move (default)
+    function Creep(grid, whichPath = Math.floor(Math.random() * 4)) {
         var spec = { cellSize: { horizCells: Constants.creepCellSize, vertiCells: Constants.creepCellSize } },
             health = Constants.creepHealth,
             path = [],
             currCell = {},
-            myPath = grid.getCreepPath(),
+            myPath = grid.getCreepPath(whichPath),
             spawnLoc = myPath.spawnLoc,
             endLoc = myPath.endLoc,
             dead = false,
@@ -179,7 +180,6 @@ FORTIFY.Creep = (function(Util) {
                 return false;
             }
         }
-        
         that.updatePath(grid);
         
         // Check if we have entered the target cell
@@ -197,6 +197,10 @@ FORTIFY.Creep = (function(Util) {
                 return true;
             }
             var nextCell = path[0];
+            if (typeof nextCell === 'undefined') {
+                console.log("Undefined path", path);
+                return false;
+            }
             if (didEnterNextCell(nextCell)) {
                 path.shift();
                 if (path.length === 0) {

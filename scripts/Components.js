@@ -85,10 +85,12 @@ FORTIFY.components = (function(Creep) {
             right = loc(Math.floor(numberOfRows/2), numberOfCols-1),
             top = loc(0, Math.floor(numberOfCols/2)),
             bottom = loc(numberOfRows-1, Math.floor(numberOfCols/2));
-        that.getCreepPath = function() {
+
+        // Pass in number between 0-3 (inclusive) to get a path for creeps
+        // 0: l->r, 1: r->l, 2: t->b, 3: b->t
+        that.getCreepPath = function(pathNumber) {
             var that = {};
             
-            var pathNumber = Math.floor(Math.random() * 4);
             if (pathNumber === 0) {
                 that.spawnLoc = left;
                 that.endLoc = right;

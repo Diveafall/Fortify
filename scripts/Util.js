@@ -37,9 +37,11 @@ FORTIFY.Util = (function() {
         return loc(row, col);
     }
 
-    // Returns a Point object representing the origin of the grid cell
+    // Returns a Point object representing the center of the grid cell
+    // Needs to be origin so creep can have that as their target
     function pointCoordFromLocation(row, col) {
-        return FORTIFY.Point(col * FORTIFY.Constants.gridCellDimensions.width, row * FORTIFY.Constants.gridCellDimensions.height);
+        return FORTIFY.Point(col * FORTIFY.Constants.gridCellDimensions.width + FORTIFY.Constants.gridCellDimensions.width/2,
+            row * FORTIFY.Constants.gridCellDimensions.height + FORTIFY.Constants.gridCellDimensions.height/2);
     }
     
     // Copy of grid

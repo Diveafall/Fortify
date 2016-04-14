@@ -11,7 +11,9 @@ FORTIFY.model = (function(components, graphics, input) {
         timeToNextSpawn = 0,
         internalMouseMove,
         internalMouseClick,
-		keyboard = input.Keyboard();
+		keyboard = input.Keyboard(),
+        testCreepLeftRight, // Used for checking that creep still have paths. Never updated or rendered.
+        testCreepTopBottom;
 
 	//------------------------------------------------------------------
 	//
@@ -30,12 +32,23 @@ FORTIFY.model = (function(components, graphics, input) {
         
         FORTIFY.Util.init();
         
+        testCreepLeftRight = components.Creep(grid, 0);
+        testCreepTopBottom = components.Creep(grid, 2);
+        
         internalUpdate = updatePlaying;
         internalRender = renderPlaying;
         
         internalMouseClick = playingMouseClick;
         internalMouseMove = playingMouseMove;
+        
+        // Temporary
+        keyboard.registerCommand(KeyEvent.DOM_VK_B, buyTower);
 	}
+    
+    // Temporary for ease of use when purchasing towers
+    function buyTower() {
+        towerPurchased(FORTIFY.components.Tower.Turbolaser);
+    }
     
     //------------------------------------------------------------------
 	//
@@ -96,31 +109,37 @@ FORTIFY.model = (function(components, graphics, input) {
 	function placementMouseClick(event) {
         if (grid.isPlacing()) {
             if (grid.isValid()) {
-                // TODO - add tower, call updatePath(grid) for all creeps
-                // make sure they have paths
-                // remove the placed tower if one creep has no path
-                
-                // Also - maybe create two temporary creeps that move in both directions
-                // If they don't have paths, don't allow
-                
                 // places the tower in the grid, remembers it
-                var tower = grid.endPlacement(true);
+                var tower = grid.endPlacement(true),
+                    towerWasValid = true;
+                    
+                // Test for entire path from left to right and top to bottom
+                towerWasValid = testCreepLeftRight.updatePath(grid) 
+                    && testCreepTopBottom.updatePath(grid);
                 
-                for (var i = 0; i < creeps.length; ++i) {
+                // Check each creep to ensure they still have paths
+                for (var i = 0; i < creeps.length && towerWasValid; ++i) {
                     if (!creeps[i].updatePath(grid)) { // one of the creeps no longer has a path
                         // TODO: Notify of failure
                         console.log('path block');
                         
                         // remove the tower from grid
                         grid.removeTowerFromGrid(tower);
-                        // stop the function
-                        return;
+                        
+                        towerWasValid = false;
                     }
                 }
                 
-                // if we got here, then all creeps have paths
-                towers.push(tower); // push tower to container
-                FORTIFY.StatsPanel.hide(); // hide the stats panel
+                if (towerWasValid) {
+                    // if we got here, then all creeps have paths
+                    towers.push(tower); // push tower to container
+                    FORTIFY.StatsPanel.hide(); // hide the stats panel
+                } else {
+                    // Redo all paths for creeps
+                    for (var i = 0; i < creeps.length; i++) {
+                        creeps[i].updatePath(grid);
+                    }
+                }
                 
                 // switch to playing
                 internalUpdate = updatePlaying;
@@ -218,6 +237,8 @@ FORTIFY.model = (function(components, graphics, input) {
                 }
             }
         }
+        
+        keyboard.update(elapsedTime);
     }
     
     //------------------------------------------------------------------
@@ -270,6 +291,8 @@ FORTIFY.model = (function(components, graphics, input) {
 	function render() {
 		internalRender();
 	}
+    
+    
 
 	return {
 		initialize: initialize,
