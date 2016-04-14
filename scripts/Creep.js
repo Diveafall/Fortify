@@ -1,11 +1,11 @@
 
-FORTIFY.Creep = (function(Util) {
+FORTIFY.Creep = (function(Util, AnimatedModel) {
     
     var Constants = {
         get creepCellSize() { return 0.75; },
-        get creepHealth() { return 100; },
+        get creepHealth() { return 200; },
         get creepColor() { return "#0000FF"; },
-        get creepSpeed() { return 0.05; }
+        get creepSpeed() { return 0.04; }
     }
     
     // Check if cell is open
@@ -113,7 +113,20 @@ FORTIFY.Creep = (function(Util) {
             endLoc = myPath.endLoc,
             dead = false,
             reachedEnd = false,
-            isSlowed = false;
+            isSlowed = false,
+            isFirstUpdate = true;
+        
+        var myModel = AnimatedModel.AnimatedModel( {
+			spriteSheet : 'assets/creep1-blue.png',
+			spriteCount : 6,
+			spriteTime : [1000, 200, 100, 1000, 100, 200],	// milliseconds per sprite animation frame
+			center : { x : 23, y : 23 },
+            scale : 0.6,
+			rotation : 0,
+			orientation : 0,				// Sprite orientation with respect to "forward"
+			moveRate : 200 / 1000,// (IGNORED)			// pixels per millisecond
+			rotateRate : 3.14159 / 1000 // (IGNORED)		// Radians per millisecond
+		})
 
         spec.frame = {
             x: 0, y: 0, 
@@ -188,6 +201,18 @@ FORTIFY.Creep = (function(Util) {
             
             return currGridLoc.row == nextCell.row && currGridLoc.col == nextCell.col;
         }
+        
+        // set target angle to angle between my center and given point
+        that.turn = function(point) {
+            //console.log(point);
+            var targetAngle = that.center.angle(point);
+            console.log(targetAngle);
+            // if (that.shootRadius > that.center.distance(point)) {
+            //     currentTarget = point;
+            // } else {
+            //     currentTarget = undefined;
+            // }
+        }
                 
         that.update = function(elapsedTime) {
             // Steps for updating: 
@@ -221,8 +246,49 @@ FORTIFY.Creep = (function(Util) {
             var actualMoveVector = {x: moveVector.x * moveRatio, y: moveVector.y * moveRatio};
             
             // Update location
-            that.center = {x: that.center.x + actualMoveVector.x, y: that.center.y + actualMoveVector.y};
+            var newCenter = FORTIFY.Point(that.center.x + actualMoveVector.x, that.center.y + actualMoveVector.y);
+            
+            // Update location for creep model
+            var newAngle = newCenter.angle(FORTIFY.Point(nextCell.x, nextCell.y));
+            myModel.updateTargetRotation(newAngle);
+            
+            // Update angle instantly if is first update
+            if (isFirstUpdate) {
+                isFirstUpdate = false;
+                myModel.setRotation(newAngle);
+            }
+            
+            // If rotated enough, move forward
+            if (myModel.update(elapsedTime)) {
+                that.center = FORTIFY.Point(newCenter.x, newCenter.y);
+                myModel.updateCenter(that.center.x, that.center.y);
+            }
+            
             return false;
+        }
+        
+        that.render = function(graphics) {
+            //
+            myModel.render();
+            
+            var context = graphics.getContext();
+            
+            // Old rendering method
+            // context.save();
+            // context.fillStyle = Constants.creepColor;//creep.creepColor;
+            // context.beginPath();
+            // context.arc(that.center.x, that.center.y, that.radius, 0, 2 * Math.PI);
+            // context.fill();
+            // context.restore();
+            
+            // Health bar
+            context.save();
+            context.strokeStyle = 'black';
+            context.fillStyle = 'green';
+            var barHeight = that.height / 3;
+            context.strokeRect(that.origin.x, that.origin.y - (barHeight * 3), that.width, barHeight);
+            context.fillRect(that.origin.x, that.origin.y - (barHeight * 3), that.width * that.healthPercentage(), barHeight);
+            context.restore();
         }
         
         return that;
@@ -231,4 +297,4 @@ FORTIFY.Creep = (function(Util) {
     return {
         Creep: Creep
     }
-})(FORTIFY.Util);
+})(FORTIFY.Util, FORTIFY.AnimatedModel);
