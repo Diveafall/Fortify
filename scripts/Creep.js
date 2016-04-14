@@ -121,7 +121,7 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
 			spriteCount : 6,
 			spriteTime : [1000, 200, 100, 1000, 100, 200],	// milliseconds per sprite animation frame
 			center : { x : 23, y : 23 },
-            scale : 0.6,
+            scale : 0.5,
 			rotation : 0,
 			orientation : 0,				// Sprite orientation with respect to "forward"
 			moveRate : 200 / 1000,// (IGNORED)			// pixels per millisecond
@@ -268,23 +268,17 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
         }
         
         that.render = function(graphics) {
-            //
+            // Render the actual animated sprite
             myModel.render();
             
+            // Draw the health bar
             var context = graphics.getContext();
-            
-            // Old rendering method
-            // context.save();
-            // context.fillStyle = Constants.creepColor;//creep.creepColor;
-            // context.beginPath();
-            // context.arc(that.center.x, that.center.y, that.radius, 0, 2 * Math.PI);
-            // context.fill();
-            // context.restore();
-            
-            // Health bar
             context.save();
             context.strokeStyle = 'black';
             context.fillStyle = 'green';
+            if (that.healthPercentage() < 0.5) {
+                context.fillStyle = 'red';
+            }
             var barHeight = that.height / 3;
             context.strokeRect(that.origin.x, that.origin.y - (barHeight * 3), that.width, barHeight);
             context.fillRect(that.origin.x, that.origin.y - (barHeight * 3), that.width * that.healthPercentage(), barHeight);
