@@ -64,7 +64,6 @@ FORTIFY.components.Tower = (function(model, components) {
             
             var newProjectile = spec.Projectile({
                 rotation: that.angle, // current angle of the tower
-                moveRate: 400 / 1000, // pixels per second
                 containerFrame: that.containerFrame, // projectile can see the frame it's in
                 frame: {
                     x: 0,

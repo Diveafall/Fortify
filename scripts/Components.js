@@ -268,10 +268,7 @@ FORTIFY.components = (function(Creep, AnimatedModel) {
         that.rotation = spec.rotation;
         
         that.rotation = spec.rotation;
-        
-        Object.defineProperty(that, 'moveRate', {
-            get: function() { return spec.moveRate; }
-        });
+        that.moveRate = 400 / 1000; // pixels per second
         
         that.isWithinBounds = function() {
             if (that.center.x < 0 ||
@@ -288,7 +285,7 @@ FORTIFY.components = (function(Creep, AnimatedModel) {
         
         that.update = function(elapsedTime) {
             var vectorX = Math.cos(that.rotation), vectorY = Math.sin(that.rotation);
-            that.center = that.center.add({ x: vectorX * spec.moveRate * elapsedTime, y: vectorY * spec.moveRate * elapsedTime });
+            that.center = that.center.add({ x: vectorX * that.moveRate * elapsedTime, y: vectorY * that.moveRate * elapsedTime });
         };
 
         return that;        
@@ -303,13 +300,13 @@ FORTIFY.components = (function(Creep, AnimatedModel) {
         that.setTarget = function(target) {
             currentTarget = target;
         };
+        
+        that.moveRate = 200 / 1000; // pixels per second
             
         that.update = function(elapsedTime) {
             if (currentTarget) {
+                if (currentTarget.isDead()) currentTarget = undefined;
                 that.rotation = that.center.angle(currentTarget.center);
-                if (that.rotation > 2 * Math.PI) {
-                    that.rotation = 0;
-                }
             }
             base.update(elapsedTime);
         };
