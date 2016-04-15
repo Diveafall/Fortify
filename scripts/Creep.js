@@ -150,11 +150,16 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
             return Math.sqrt(Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2));
         }
         
+        function vacateLocation() {
+            if (path.length > 0) grid.cellAtLocation(path[0]).vacant();
+        }
+        
         // Take damage from projectile
         that.takeDamage = function(damage) {
             health -= damage;
             if (health <= 0) {
                 dead = true;
+                vacateLocation();
             }
         }
         
@@ -182,6 +187,7 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
         // Only called on init and when tower is placed
         // return true or false based on if we stil have a path
         that.updatePath = function(currGrid) {
+            vacateLocation();
             var gridCopy = currGrid.getGridCopy();
             var currCell = Util.gridLocationFromCoord(that.center.x, that.center.y);
             
@@ -193,12 +199,12 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
                 return false;
             }
         }
+        
         that.updatePath(grid);
         
         // Check if we have entered the target cell
         var didEnterNextCell = function(nextCell) {
             var currGridLoc = Util.gridLocationFromCoord(that.center.x, that.center.y);
-            
             return currGridLoc.row == nextCell.row && currGridLoc.col == nextCell.col;
         }
         
@@ -218,17 +224,21 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
             // Steps for updating: 
             // 1. Check if we have moved to a new cell
             // 2. If we have moved, remove current cell as target and switch to next
-            if (reachedEnd || dead) {
+            if (reachedEnd || dead || path.length < 1) {
                 return true;
             }
+            
             var nextCell = path[0];
-            if (didEnterNextCell(nextCell)) {
+            
+            if (didEnterNextCell(nextCell)) { // entered new cell
+                grid.cellAtLocation(nextCell).vacant();
                 path.shift();
                 if (path.length === 0) {
                     reachedEnd = true;
                     return true;
                 }
                 nextCell = path[0];
+                grid.cellAtLocation(nextCell).occupy();
             }
             
             // Direction to move

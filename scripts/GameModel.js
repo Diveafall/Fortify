@@ -231,7 +231,7 @@ FORTIFY.model = (function(components, graphics, input) {
             } else {
                 for (var j = 0; j < creeps.length; ++j) { // projectile hasn't died let's see if it has collided with any creep
                     if (projectiles[i].didCollideWith(creeps[j])) { // if they collided
-                        creeps[j].takeDamage(10); // creep takes damage
+                        creeps[j].takeDamage(projectiles[i].damage); // creep takes damage
                         projectiles.splice(i, 1); // remove projectile
                         break;
                     }

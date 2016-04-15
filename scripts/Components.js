@@ -140,17 +140,22 @@ FORTIFY.components = (function(Creep, AnimatedModel) {
             return currentSelection.highlightedCells.length === currentSelection.selectedTower.totalCells();
         }
         
+        // returns true if currently placing a tower
         that.isPlacing = function() { return isPlacing; };
+        
+        // return grid cell at location
+        that.cellAtLocation = function(location) {
+            return grid[location.row][location.col];
+        };
         
         // setting up tower placement 
         that.beginPlacement = function(tower) {
-            if (!isPlacing) {
-                isPlacing = true; // start placing
-                currentSelection.selectedTower = tower; // initialize a tower of given type, store it
-                // horiz and vertical offsets help highlight appropriate cells
-                currentSelection.horizOffset = Math.floor(currentSelection.selectedTower.cellSize.horizCells / 2);
-                currentSelection.vertiOffset = Math.floor(currentSelection.selectedTower.cellSize.vertiCells / 2);
-            }
+            if (isPlacing) that.endPlacement(false);
+            isPlacing = true; // start placing
+            currentSelection.selectedTower = tower; // initialize a tower of given type, store it
+            // horiz and vertical offsets help highlight appropriate cells
+            currentSelection.horizOffset = Math.floor(currentSelection.selectedTower.cellSize.horizCells / 2);
+            currentSelection.vertiOffset = Math.floor(currentSelection.selectedTower.cellSize.vertiCells / 2);
         }
         
         // finishing tower placement
@@ -171,6 +176,7 @@ FORTIFY.components = (function(Creep, AnimatedModel) {
                     return addedTower; // return that added tower
                     
                 } else { // if success is false, then placement got canceled
+                    discountHighlightedCells();
                     currentSelection.highlightedCells.length = 0; // empty highlighted cells' array
                     currentSelection.selectedTower = undefined; // remove tower from storage
                 }
@@ -270,6 +276,10 @@ FORTIFY.components = (function(Creep, AnimatedModel) {
         that.rotation = spec.rotation;
         that.moveRate = 400 / 1000; // pixels per second
         
+        Object.defineProperty(that, 'damage', {
+            get: function() { return spec.damage; }
+        });
+        
         that.isWithinBounds = function() {
             if (that.center.x < 0 ||
                 that.center.y < 0 ||
@@ -304,8 +314,7 @@ FORTIFY.components = (function(Creep, AnimatedModel) {
         that.moveRate = 200 / 1000; // pixels per second
             
         that.update = function(elapsedTime) {
-            if (currentTarget) {
-                if (currentTarget.isDead()) currentTarget = undefined;
+            if (currentTarget && !currentTarget.isDead()) {
                 that.rotation = that.center.angle(currentTarget.center);
             }
             base.update(elapsedTime);

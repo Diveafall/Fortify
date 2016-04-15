@@ -65,6 +65,7 @@ FORTIFY.components.Tower = (function(model, components) {
             var newProjectile = spec.Projectile({
                 rotation: that.angle, // current angle of the tower
                 containerFrame: that.containerFrame, // projectile can see the frame it's in
+                damage: that.damage,
                 frame: {
                     x: 0,
                     y: 0,
@@ -98,7 +99,7 @@ FORTIFY.components.Tower = (function(model, components) {
         
         // upgrades the tower if not last level
         that.upgrade = function() {
-            if (currentLevel + 1 <= spec.levels.length) {
+            if (currentLevel + 1 < spec.levels.length) {
                 currentLevel++;
             }
         };
@@ -163,8 +164,6 @@ FORTIFY.components.Tower = (function(model, components) {
                 // make sure we stay inside these bounds [0, 2 * PI]
                 if (that.angle > 2 * Math.PI) that.angle = 0;
                 if (that.angle < 0) that.angle += 2 * Math.PI;
-            } else { // still have no target
-                // CHILL xD
             }
         };
         
@@ -252,24 +251,24 @@ FORTIFY.components.Tower = (function(model, components) {
             height = vertiCells * components.Constants.gridCellDimentions.height,
             levels = [
                 {
-                    name: "TURBO LASER",
-                    damage: 15,
+                    name: "VULTURE",
+                    damage: 25,
                     shootRate: 1000 / 1,
                     shootRadius: height * 5,
                     purchaseCost: 5,
                     sellCost: 3
                 },
                 {
-                    name: "TURBO LASER",
-                    damage: 20,
+                    name: "MEGA VULTURE",
+                    damage: 35,
                     shootRate: 1000 / 2,
                     shootRadius: height * 6,
                     purchaseCost: 10,
                     sellCost: 7
                 },
                 {
-                    name: "TURBO LASER",
-                    damage: 25,
+                    name: "HYPER VULTURE",
+                    damage: 45,
                     shootRate: 1000 / 3,
                     shootRadius: height * 7,
                     purchaseCost: 15,
