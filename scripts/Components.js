@@ -267,9 +267,7 @@ FORTIFY.components = (function(Creep) {
         that.strokeColor = 'rgba(112, 246, 90, 1)';
         that.rotation = spec.rotation;
         
-        Object.defineProperty(that, 'rotation', {
-            get: function() { return spec.rotation; }
-        });
+        that.rotation = spec.rotation;
         
         Object.defineProperty(that, 'moveRate', {
             get: function() { return spec.moveRate; }
@@ -308,9 +306,10 @@ FORTIFY.components = (function(Creep) {
             
         that.update = function(elapsedTime) {
             if (currentTarget) {
-                that.rotation = that.center.angle(currentTarget);
-                console.log("Current rotation: ", that.rotation, "Current target: x - ", currentTarget.x, "y - ", currentTarget.y);
-                console.log("My center: ", that.center.x, that.center.y);
+                that.rotation = that.center.angle(currentTarget.center);
+                if (that.rotation > 2 * Math.PI) {
+                    that.rotation = 0;
+                }
             }
             base.update(elapsedTime);
         };
@@ -322,6 +321,7 @@ FORTIFY.components = (function(Creep) {
 		Constants: Constants,
         GameGrid: GameGrid,
         Creep: Creep.Creep,
-        Projectile: Projectile
+        Projectile: Projectile,
+        GuidedProjectile: GuidedProjectile
 	};
 }(FORTIFY.Creep));

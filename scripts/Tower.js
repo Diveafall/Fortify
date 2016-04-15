@@ -60,7 +60,7 @@ FORTIFY.components.Tower = (function(model, components) {
         that.rotationSpeed = 2 * Math.PI / 1000; // one rotation per second
         
         // FIRE!!!
-        that.fire = function() {
+        function fire() {
             
             var newProjectile = spec.Projectile({
                 rotation: that.angle, // current angle of the tower
@@ -118,18 +118,19 @@ FORTIFY.components.Tower = (function(model, components) {
         }
         
         that.update = function(elapsedTime) {
-            // if I don't have a target or it's out of range or dead, I'll look for a new one
-            if (!currentTarget || !that.objectIsWithinRange(currentTarget) || currentTarget.isDead()) {
-                // START LOOKING FOR A NEW TARGET
-                var currentTarget = undefined, closestObjectDistance = that.shootRadius, creeps = model.creeps, distance;
-                for (var i = 0; i < creeps.length; ++i) {
-                    distance = that.center.distance(creeps[i].center);
-                    if (distance < closestObjectDistance) { // this new guy is closer than the old guy
-                        closestObjectDistance = distance;
-                        currentTarget = creeps[i];
-                    }
+            // START LOOKING FOR A NEW TARGET
+            var closestObjectDistance = that.shootRadius, creeps = model.creeps, distance;
+            currentTarget = undefined;
+            
+            for (var i = 0; i < creeps.length; ++i) {
+                if (!that.objectIsWithinRange(creeps[i]) && creeps[i].isDead()) continue; // if the creep is outside of range or dead, move on
+                distance = that.center.distance(creeps[i].center);
+                if (distance < closestObjectDistance) { // this new guy is closer than the old guy
+                    closestObjectDistance = distance;
+                    currentTarget = creeps[i];
                 }
             }
+            
             // we either already had a target that wasn't dead or out of range
             // or we couldn't find a new one
             if (currentTarget) { // if we found a new one
@@ -154,7 +155,7 @@ FORTIFY.components.Tower = (function(model, components) {
                         // HANDLING THE FIRING
                         fireTimer += elapsedTime;
                         if (fireTimer >= that.shootRate) { // time to shoot
-                            that.fire(); // FIRE!
+                            fire(); // FIRE!
                             fireTimer = 0; // reset timer
                         }
                     }
@@ -202,8 +203,8 @@ FORTIFY.components.Tower = (function(model, components) {
                     sellCost: 12
                 }
             ];
-            
-        return Tower({ 
+        
+        var tower =  Tower({ 
             cellSize: { horizCells: horizCells, vertiCells: vertiCells }, 
             frame: { x: -width, y: -height, width: width, height: height },
             projectiles: spec.projectiles,
@@ -211,9 +212,116 @@ FORTIFY.components.Tower = (function(model, components) {
             Projectile: components.Projectile,
             levels: levels
         });
+        
+        tower.render = function(context, a) {
+            // Draw base
+            if (a) {
+                context.save();
+                context.fillStyle = 'lightgrey';
+                context.beginPath();
+                context.arc(tower.center.x, tower.center.y, tower.shootRadius, 0, 2 * Math.PI);
+                context.fill();
+                context.restore();
+            }
+            
+            // Draw base
+            context.save();
+            context.fillStyle = tower.baseColor;
+            context.beginPath();
+            context.arc(tower.center.x, tower.center.y, tower.radius, 0, 2 * Math.PI);
+            context.fill();
+            context.restore();
+            
+            // Draw cannon
+            context.save();
+            context.translate(tower.center.x, tower.center.y);
+            context.rotate(tower.angle);
+            context.translate(-tower.center.x, -tower.center.y);
+            context.fillStyle = tower.cannonColor;
+            context.fillRect(tower.center.x, tower.center.y - tower.cannonWidth / 2, tower.width / 2, tower.cannonWidth);
+            
+            context.restore();
+        }
+        
+        return tower;
+    }
+    
+    function Vulture(spec) {
+        var horizCells = 3, 
+            vertiCells = 3, 
+            width = horizCells * components.Constants.gridCellDimentions.width, 
+            height = vertiCells * components.Constants.gridCellDimentions.height,
+            levels = [
+                {
+                    name: "TURBO LASER",
+                    damage: 15,
+                    shootRate: 1000 / 1,
+                    shootRadius: height * 5,
+                    purchaseCost: 5,
+                    sellCost: 3
+                },
+                {
+                    name: "TURBO LASER",
+                    damage: 20,
+                    shootRate: 1000 / 2,
+                    shootRadius: height * 6,
+                    purchaseCost: 10,
+                    sellCost: 7
+                },
+                {
+                    name: "TURBO LASER",
+                    damage: 25,
+                    shootRate: 1000 / 3,
+                    shootRadius: height * 7,
+                    purchaseCost: 15,
+                    sellCost: 12
+                }
+            ];
+        
+        var tower =  Tower({ 
+            cellSize: { horizCells: horizCells, vertiCells: vertiCells }, 
+            frame: { x: -width, y: -height, width: width, height: height },
+            projectiles: spec.projectiles,
+            containerFrame: spec.containerFrame,
+            Projectile: components.GuidedProjectile,
+            levels: levels
+        });
+        
+        tower.render = function(context, a) {
+            // Draw base
+            if (a) {
+                context.save();
+                context.fillStyle = 'lightgrey';
+                context.beginPath();
+                context.arc(tower.center.x, tower.center.y, tower.shootRadius, 0, 2 * Math.PI);
+                context.fill();
+                context.restore();
+            }
+            
+            // Draw base
+            context.save();
+            context.fillStyle = tower.baseColor;
+            context.beginPath();
+            context.arc(tower.center.x, tower.center.y, tower.radius, 0, 2 * Math.PI);
+            context.fill();
+            context.restore();
+            
+            // Draw cannon
+            context.save();
+            context.translate(tower.center.x, tower.center.y);
+            context.rotate(tower.angle);
+            context.translate(-tower.center.x, -tower.center.y);
+            context.fillStyle = tower.cannonColor;
+            context.fillRect(tower.center.x, tower.center.y - tower.cannonWidth / 2, tower.width / 2, tower.cannonWidth);
+            
+            context.restore();
+        }
+        
+        return tower;
     }
     
     return {
-        Turbolaser: Turbolaser
+        Turbolaser: Turbolaser,
+        Vulture: Vulture
     };
 }) (FORTIFY.model, FORTIFY.components);
