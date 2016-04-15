@@ -253,7 +253,8 @@ FORTIFY.model = (function(components, graphics, input) {
             graphics.drawTower(towers[i], false);
         }
         for (var i = 0; i < creeps.length; i++) {
-            graphics.drawCreep(creeps[i]);
+            creeps[i].render(graphics)
+            //graphics.drawCreep(creeps[i]);
         }
     }
     
@@ -271,7 +272,8 @@ FORTIFY.model = (function(components, graphics, input) {
             graphics.drawProjectile(projectiles[i]);
         }
         for (var i = 0; i < creeps.length; i++) {
-            graphics.drawCreep(creeps[i]);
+            creeps[i].render(graphics);
+            //graphics.drawCreep(creeps[i]);
         }
 	}
 

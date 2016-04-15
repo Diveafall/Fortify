@@ -1,5 +1,5 @@
 
-FORTIFY.components = (function(Creep) {
+FORTIFY.components = (function(Creep, AnimatedModel) {
 
 	//
 	// Constants, as best as we can do them in JavaScript
