@@ -304,6 +304,7 @@ FORTIFY.model = (function(components, graphics, input) {
 		render: render,
         towerPurchased: towerPurchased,
         towerSold: towerSold,
-        creeps: creeps
+        creeps: creeps,
+        projectiles: projectiles
 	};
 }) (FORTIFY.components, FORTIFY.graphics, FORTIFY.input);

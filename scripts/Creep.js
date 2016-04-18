@@ -113,8 +113,8 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
             endLoc = myPath.endLoc,
             dead = false,
             reachedEnd = false,
-            isSlowed = false,
-            isFirstUpdate = true;
+            isFirstUpdate = true,
+            effects = [];
         
         var myModel = AnimatedModel.AnimatedModel( {
 			spriteSheet : 'assets/creep1-blue.png',
@@ -168,10 +168,6 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
             return dead;
         };
         
-        that.slowCreep = function() {
-            isSlowed = true;
-        }
-        
         that.healthPercentage = function() {
             var pct = health / Constants.creepHealth;
             if (pct < 0) {
@@ -219,6 +215,11 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
             //     currentTarget = undefined;
             // }
         }
+        
+        // apply effect to creep
+        that.applyEffect = function(effect) {
+            if (effect) effects.push(effect);
+        };
                 
         that.update = function(elapsedTime) {
             // Steps for updating: 
@@ -227,6 +228,10 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
             if (reachedEnd || dead || path.length < 1) {
                 return true;
             }
+            
+            var updateStats = {
+                moveDistance: 0
+            };
             
             var nextCell = path[0];
             
@@ -245,12 +250,20 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
             var moveVector = {x: nextCell.x - that.center.x, y: nextCell.y - that.center.y};
             
             // Scale distance so we move a constant amount
-            var updateMoveDistance = Constants.creepSpeed * elapsedTime;
-            if (isSlowed) {
-                updateMoveDistance *= 0.5;
+            updateStats.moveDistance = Constants.creepSpeed * elapsedTime;
+            
+            // APPLY EFFECTS
+            for (var i = effects.length - 1; i >= 0; --i) {
+                effects[i].update(elapsedTime);
+                if (effects[i].hasExpired()) {
+                    effects.splice(i, 1);
+                } else {
+                    effects[i].affect(updateStats);
+                }
             }
+            
             var remainingDistance = calcDistance(moveVector.x, 0, moveVector.y, 0);
-            var moveRatio = updateMoveDistance / remainingDistance;
+            var moveRatio = updateStats.moveDistance / remainingDistance;
             
             // Actual distance to move
             var actualMoveVector = {x: moveVector.x * moveRatio, y: moveVector.y * moveRatio};
