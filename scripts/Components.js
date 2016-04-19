@@ -326,7 +326,7 @@ FORTIFY.components = (function(Creep, AnimatedModel) {
 	return {
 		Constants: Constants,
         GameGrid: GameGrid,
-        Creep: Creep.Creep,
+        Creep: Creep,
         Projectile: Projectile,
         GuidedProjectile: GuidedProjectile
 	};

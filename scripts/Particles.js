@@ -6,12 +6,16 @@ FORTIFY.particles = (function() {
         images = {
             fire: new Image(),
             smoke: new Image(),
-            creep1: new Image()
+            creep1: new Image(),
+            creep2: new Image(),
+            creep3: new Image()
         };
     
     images.fire.src = "assets/fire.png";
     images.smoke.src = "assets/smoke.png";
     images.creep1.src = "assets/creep1-blue-particle.png";
+    images.creep2.src = "assets/creep2-red-particle.png";
+    images.creep3.src = "assets/creep3-green-particle.png";
     
     // spec should have:
     // text
@@ -25,8 +29,6 @@ FORTIFY.particles = (function() {
         spec.position = spec.center;
         spec.alive = 0;
         spec.spin = false;
-        
-        console.log(spec);
         
         particles[nextName++] = spec;
     }

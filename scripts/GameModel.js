@@ -32,8 +32,18 @@ FORTIFY.model = (function(components, graphics, input, particles) {
         
         FORTIFY.Util.init();
         
-        testCreepLeftRight = components.Creep(grid, 0);
-        testCreepTopBottom = components.Creep(grid, 2);
+        var leftRightSpec = {
+            grid: grid,
+            level: 0,
+            whichPath: 0
+        };
+        var topBottomSpec = {
+            grid: grid,
+            level: 0,
+            whichPath: 2
+        }
+        testCreepLeftRight = components.Creep.createCreep(leftRightSpec);
+        testCreepTopBottom = components.Creep.createCreep(topBottomSpec);
         
         internalUpdate = updatePlaying;
         internalRender = renderPlaying;
@@ -179,7 +189,7 @@ FORTIFY.model = (function(components, graphics, input, particles) {
     // Create creep death particles
     function creepDeath(creep) {
         var effectSpec = {
-            type: 'creep1',
+            type: 'creep' + (creep.type + 1), // Add one to match actual image names
             center: creep.center,
             speed: {mean: 20, stdev: 2},
             size: {mean: 5, stdev: 1},
@@ -215,21 +225,24 @@ FORTIFY.model = (function(components, graphics, input, particles) {
                 if (creeps[i].reachedEnd()) {
                     // TODO - Remove one health from player
                 } else {
-                    // TODO - Add points, render score floating from creep death
+                    // TODO - Add points
+                    creepDeath(creeps[i]);
                 }
                 creepsToRemove.push(i);
             }
         }
         
         for (i = creepsToRemove.length; i--; i >= 0) {
-            var curr = creeps[creepsToRemove[i]];
-            creepDeath(curr);
             creeps.splice(creepsToRemove[i], 1);
         }
         
         timeToNextSpawn -= elapsedTime;
         if (timeToNextSpawn <= 0) {
-            creeps.push(components.Creep(grid));
+            var creepSpec = {
+                grid: grid,
+                level: 0
+            }
+            creeps.push(components.Creep.createCreep(creepSpec));
             timeToNextSpawn = 4000;
         }
     }

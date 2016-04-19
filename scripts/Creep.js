@@ -5,28 +5,44 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
         get creepCellSize() { return 0.75; },
         get creepHealth() { return 200; },
         get creepColor() { return "#0000FF"; },
-        get creepSpeed() { return 0.04; }
+        get creepSpeed() { return 0.04; },
+        get creepSpeedPerLevel() { return 0.005; },
+        get creepPoints() { return 20; },
+        get creepPointsPerLevel() { return 10; },
+        get airType() { return 2; }
     }
     
+    var spriteSheetImages = [
+      "assets/creep1-blue.png",
+      "assets/creep2-red.png",
+      "assets/creep3-green.png"
+    ],
+    spriteSheetImageCounts = [6, 4, 4],
+    spriteSheetTimings = [
+      [1000, 200, 100, 1000, 100, 200],
+      [200, 1000, 200, 600],
+      [1000, 200, 200, 200]  
+    ];
+    
     // Check if cell is open
-    function isPath(cell) {
-        return cell.isAvailable() && !cell.isVisited();
+    function isPath(cell, isFlyer) {
+        return (cell.isAvailable() || isFlyer) && !cell.isVisited();
     }
 
     // Check for accessible paths from cell
-    function pathsForCell(cell, grid) {
+    function pathsForCell(cell, grid, isFlyer) {
         var paths = [];
         
-        if (cell.row > 0 && isPath(grid[cell.row - 1][cell.col])) {
+        if (cell.row > 0 && isPath(grid[cell.row - 1][cell.col], isFlyer)) {
             paths.push(Util.loc(cell.row - 1, cell.col));
         }
-        if (cell.row < grid.length - 1 && isPath(grid[cell.row + 1][cell.col])) {
+        if (cell.row < grid.length - 1 && isPath(grid[cell.row + 1][cell.col], isFlyer)) {
             paths.push(Util.loc(cell.row + 1, cell.col));
         }
-        if (cell.col > 0 && isPath(grid[cell.row][cell.col-1])) {
+        if (cell.col > 0 && isPath(grid[cell.row][cell.col-1], isFlyer)) {
             paths.push(Util.loc(cell.row, cell.col - 1));
         }
-        if (cell.col < grid.length - 1 && isPath(grid[cell.row][cell.col+1])) {
+        if (cell.col < grid.length - 1 && isPath(grid[cell.row][cell.col+1], isFlyer)) {
             paths.push(Util.loc(cell.row, cell.col + 1));
         }
 
@@ -45,7 +61,7 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
     
     var count = 0;
     // Find shortest path in grid to goal
-    function shortestPath(grid, startLoc, endLoc) {
+    function shortestPath(grid, startLoc, endLoc, isFlyer = false) {
         //var startLoc = findStart(myMaze);
         count = 0;
 
@@ -66,7 +82,7 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
             count++;
 
             // queue next possibilities
-            var nextSteps = pathsForCell(curr, grid);
+            var nextSteps = pathsForCell(curr, grid, isFlyer);
             for (i = 0; i < nextSteps.length; i++) {
                 if(!alreadyVisited(nextSteps[i], path)) {
                     var pathCopy = path.slice();
@@ -103,12 +119,12 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
     
     // Create new creep
     // If whichPath is not specified, generate a random direction to move (default)
-    function Creep(grid, whichPath = Math.floor(Math.random() * 4)) {
-        var spec = { cellSize: { horizCells: Constants.creepCellSize, vertiCells: Constants.creepCellSize } },
+    function Creep(spec) {
+        var sizeSpec = { cellSize: { horizCells: Constants.creepCellSize, vertiCells: Constants.creepCellSize } },
             health = Constants.creepHealth,
             path = [],
             currCell = {},
-            myPath = grid.getCreepPath(whichPath),
+            myPath = spec.grid.getCreepPath(spec.whichPath),
             spawnLoc = myPath.spawnLoc,
             endLoc = myPath.endLoc,
             dead = false,
@@ -116,35 +132,45 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
             isFirstUpdate = true,
             effects = [];
         
-        var myModel = AnimatedModel.AnimatedModel( {
-			spriteSheet : 'assets/creep1-blue.png',
-			spriteCount : 6,
-			spriteTime : [1000, 200, 100, 1000, 100, 200],	// milliseconds per sprite animation frame
+        var animationSpec = {
+			spriteSheet : spriteSheetImages[spec.type],
+			spriteCount : spriteSheetImageCounts[spec.type],
+			spriteTime : spriteSheetTimings[spec.type],	// milliseconds per sprite animation frame
 			center : { x : 23, y : 23 },
             scale : 0.5,
 			rotation : 0,
 			orientation : 0,				// Sprite orientation with respect to "forward"
 			moveRate : 200 / 1000,// (IGNORED)			// pixels per millisecond
 			rotateRate : 3.14159 / 1000 // (IGNORED)		// Radians per millisecond
-		})
+		};
+        var myModel = AnimatedModel.AnimatedModel(animationSpec);
 
-        spec.frame = {
+        sizeSpec.frame = {
             x: 0, y: 0, 
-            width: spec.cellSize.horizCells * FORTIFY.Constants.gridCellDimensions.width, 
-            height: spec.cellSize.vertiCells * FORTIFY.Constants.gridCellDimensions.height
+            width: sizeSpec.cellSize.horizCells * FORTIFY.Constants.gridCellDimensions.width, 
+            height: sizeSpec.cellSize.vertiCells * FORTIFY.Constants.gridCellDimensions.height
         }
         
-        var that = FORTIFY.View(spec);
+        var that = FORTIFY.View(sizeSpec);
         
         // Size values for creep
         that.creepColor = Constants.creepColor;
-        that.cellSize = spec.cellSize;
+        that.cellSize = sizeSpec.cellSize;
         that.radius = that.height / 2;
         that.center = Util.pointCoordFromLocation(spawnLoc.row, spawnLoc.col);
-        that.points = 10;
+        that.type = spec.type;
+        that.points = (function() {
+            var points = Constants.creepPoints + (Constants.creepPointsPerLevel * spec.level);
+            
+            // Give more points if it is a flyer
+            if (spec.type === Constants.airType) {
+                points *= 1.5;
+            }
+            return points;
+        })();
         
         // return the total number of cells required for this creep
-        that.totalCells = function() { return spec.cellSize.horizCells * spec.cellSize.vertiCells; };
+        that.totalCells = function() { return sizeSpec.cellSize.horizCells * sizeSpec.cellSize.vertiCells; };
         
         // Distance formula
         var calcDistance = function(x1, x2, y1, y2) {
@@ -152,7 +178,7 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
         }
         
         function vacateLocation() {
-            if (path.length > 0) grid.cellAtLocation(path[0]).vacant();
+            if (path.length > 0) spec.grid.cellAtLocation(path[0]).vacant();
         }
         
         // Take damage from projectile
@@ -188,7 +214,9 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
             var gridCopy = currGrid.getGridCopy();
             var currCell = Util.gridLocationFromCoord(that.center.x, that.center.y);
             
-            var newPath = shortestPath(gridCopy, currCell, endLoc);
+            // Find a new path, flying creep types can bypass all towers
+            var newPath = shortestPath(gridCopy, currCell, endLoc, spec.type === 2);
+            
             if (newPath != null) {
                 path = newPath;
                 return true;
@@ -196,8 +224,7 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
                 return false;
             }
         }
-        
-        that.updatePath(grid);
+        that.updatePath(spec.grid);
         
         // Check if we have entered the target cell
         var didEnterNextCell = function(nextCell) {
@@ -237,21 +264,26 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
             var nextCell = path[0];
             
             if (didEnterNextCell(nextCell)) { // entered new cell
-                grid.cellAtLocation(nextCell).vacant();
+                spec.grid.cellAtLocation(nextCell).vacant();
                 path.shift();
                 if (path.length === 0) {
                     reachedEnd = true;
                     return true;
                 }
                 nextCell = path[0];
-                grid.cellAtLocation(nextCell).occupy();
+                spec.grid.cellAtLocation(nextCell).occupy();
             }
             
             // Direction to move
             var moveVector = {x: nextCell.x - that.center.x, y: nextCell.y - that.center.y};
             
             // Scale distance so we move a constant amount
-            updateStats.moveDistance = Constants.creepSpeed * elapsedTime;
+            var creepMoveSpeed = Constants.creepSpeed + (Constants.creepSpeedPerLevel * spec.level);
+            // Slow down creep if it is a flyer
+            if (spec.type === Constants.airType) {
+                creepMoveSpeed *= 0.75;
+            }
+            updateStats.moveDistance = creepMoveSpeed * elapsedTime;
             
             // APPLY EFFECTS
             for (var i = effects.length - 1; i >= 0; --i) {
@@ -312,7 +344,26 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
         return that;
     }
     
+    
+    // Spec must include:
+    // grid - the grid it is working with
+    // level - current level of game (determines speed, health)
+    
+    // Spec can also include: 
+    // type - 0: ground1, 1: ground2, 2: air
+    // whichPath - 0-3 to determine which direction the creep will travel
+    function createCreep(spec) {
+        if (!spec.hasOwnProperty('type')) {
+            spec.type = Math.floor(Math.random() * 3);
+        }
+        if (!spec.hasOwnProperty('whichPath')) {
+            spec.whichPath = Math.floor(Math.random() * 4);
+        }
+        
+        return Creep(spec);
+    }
+    
     return {
-        Creep: Creep
+        createCreep: createCreep
     }
 })(FORTIFY.Util, FORTIFY.AnimatedModel);
