@@ -1,5 +1,5 @@
 
-FORTIFY.model = (function(components, graphics, input) {
+FORTIFY.model = (function(components, graphics, input, particles) {
 	var grid,
         towers = [],
         creeps = [],
@@ -176,6 +176,31 @@ FORTIFY.model = (function(components, graphics, input) {
     function updatePlacing(elapsedTime) {
     }
     
+    // Create creep death particles
+    function creepDeath(creep) {
+        var effectSpec = {
+            type: 'creep1',
+            center: creep.center,
+            speed: {mean: 20, stdev: 2},
+            size: {mean: 5, stdev: 1},
+            lifetime: { mean: 0.75, stdev: 0.25},
+            particleCount: 15,
+            spin: true
+        }
+        particles.createEffect(effectSpec);
+        
+        var textSpec = {
+            text: creep.points,
+            font: '16px Arial',
+            center: creep.center,
+            direction: {x: 0, y: -Math.PI/2},
+            speed: 20,
+            size: 16,
+            lifetime: 1
+        }
+        particles.createText(textSpec);
+    }
+    
     //------------------------------------------------------------------
     //
 	// Update creeps
@@ -197,6 +222,8 @@ FORTIFY.model = (function(components, graphics, input) {
         }
         
         for (i = creepsToRemove.length; i--; i >= 0) {
+            var curr = creeps[creepsToRemove[i]];
+            creepDeath(curr);
             creeps.splice(creepsToRemove[i], 1);
         }
         
@@ -239,6 +266,8 @@ FORTIFY.model = (function(components, graphics, input) {
             }
         }
         
+        particles.update(elapsedTime);
+        
         keyboard.update(elapsedTime);
     }
     
@@ -254,7 +283,6 @@ FORTIFY.model = (function(components, graphics, input) {
         }
         for (var i = 0; i < creeps.length; i++) {
             creeps[i].render(graphics)
-            //graphics.drawCreep(creeps[i]);
         }
     }
     
@@ -273,8 +301,8 @@ FORTIFY.model = (function(components, graphics, input) {
         }
         for (var i = 0; i < creeps.length; i++) {
             creeps[i].render(graphics);
-            //graphics.drawCreep(creeps[i]);
         }
+        particles.render(graphics);
 	}
 
 	//------------------------------------------------------------------
@@ -307,4 +335,4 @@ FORTIFY.model = (function(components, graphics, input) {
         creeps: creeps,
         projectiles: projectiles
 	};
-}) (FORTIFY.components, FORTIFY.graphics, FORTIFY.input);
+}) (FORTIFY.components, FORTIFY.graphics, FORTIFY.input, FORTIFY.particles);

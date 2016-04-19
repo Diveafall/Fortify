@@ -96,16 +96,34 @@ FORTIFY.graphics = (function() {
 	function drawText(spec) {
 		context.save();
 
-		context.font = spec.font,
-		context.fillStyle = spec.fill;
+		context.font = spec.font;
+		if (spec.hasOwnProperty('fill')) {
+			context.fillStyle = spec.fill;
+		}
 		if (spec.hasOwnProperty('stroke')) {
 			context.strokeStyle = spec.stroke;
 		}
-		context.textBaseline = 'top';
+		context.textBaseline = 'middle';
 
 		context.fillText(spec.text, spec.position.x, spec.position.y);
 		context.strokeText(spec.text, spec.position.x, spec.position.y);
 
+		context.restore();
+	}
+	
+	function drawImage(spec) {
+		context.save();
+		
+		context.translate(spec.center.x, spec.center.y);
+		context.rotate(spec.rotation);
+		context.translate(-spec.center.x, -spec.center.y);
+		
+		context.drawImage(
+			spec.image, 
+			spec.center.x - spec.size/2, 
+			spec.center.y - spec.size/2,
+			spec.size, spec.size);
+		
 		context.restore();
 	}
     
@@ -257,6 +275,7 @@ FORTIFY.graphics = (function() {
         canvasFrame: canvasFrame,
 		drawRectangle : drawRectangle,
 		drawText: drawText,
+		drawImage: drawImage,
         drawTower: drawTower,
         drawProjectile: drawProjectile,
 		SpriteSheet: SpriteSheet,

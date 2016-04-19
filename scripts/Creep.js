@@ -141,6 +141,7 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
         that.cellSize = spec.cellSize;
         that.radius = that.height / 2;
         that.center = Util.pointCoordFromLocation(spawnLoc.row, spawnLoc.col);
+        that.points = 10;
         
         // return the total number of cells required for this creep
         that.totalCells = function() { return spec.cellSize.horizCells * spec.cellSize.vertiCells; };
