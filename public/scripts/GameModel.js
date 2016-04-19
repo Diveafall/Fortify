@@ -4,6 +4,9 @@ FORTIFY.model = (function(components, graphics, input, particles, score) {
         towers = [],
         creeps = [],
         projectiles = [],
+        remainingLives = 50,
+        level = 0,
+        gameOver = false,
         clock,
         internalUpdate,
 		internalRender,
@@ -225,9 +228,8 @@ FORTIFY.model = (function(components, graphics, input, particles, score) {
             if (creeps[i].update(elapsedTime, grid)) {
                 // Died or reached end, remove
                 if (creeps[i].reachedEnd()) {
-                    // TODO - Remove one health from player
+                    remainingLives--;
                 } else {
-                    // TODO - Add points
                     creepDeath(creeps[i]);
                     score.add(creeps[i].points);
                 }
@@ -243,11 +245,18 @@ FORTIFY.model = (function(components, graphics, input, particles, score) {
         if (timeToNextSpawn <= 0) {
             var creepSpec = {
                 grid: grid,
-                level: 0
+                level: level
             }
             creeps.push(components.Creep.createCreep(creepSpec));
             timeToNextSpawn = 4000;
         }
+    }
+    
+    function endGame() {
+        gameOver = true;
+        score.addEndGameScore(towers, level);
+        score.submit();
+        console.log("Game over!");
     }
     
     //------------------------------------------------------------------
@@ -257,6 +266,12 @@ FORTIFY.model = (function(components, graphics, input, particles, score) {
 	//------------------------------------------------------------------
     function updatePlaying(elapsedTime) {
         var i;
+        
+        if (gameOver) {
+            return;
+        } else if (remainingLives <= 0) {
+            endGame();
+        }
             
         // Creep updates
         updateCreeps(elapsedTime);
@@ -344,6 +359,8 @@ FORTIFY.model = (function(components, graphics, input, particles, score) {
         }
         particles.render(graphics);
         score.render();
+        document.getElementById('level-label').innerHTML = level;
+        document.getElementById('lives-label').innerHTML = remainingLives;
 	}
 
 	//------------------------------------------------------------------

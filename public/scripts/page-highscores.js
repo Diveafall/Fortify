@@ -11,7 +11,7 @@ FORTIFY.pages['page-highscores'] = (function(screens) {
 	}
 
 	function displayScores() {
-		var highScores = FORTIFY.HighScores.get(),
+		var highScores = FORTIFY.score.getHighscores(),
 			highScoresHTML = document.getElementById('high-scores-list');
 
 		//
