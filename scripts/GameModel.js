@@ -35,12 +35,14 @@ FORTIFY.model = (function(components, graphics, input, particles) {
         var leftRightSpec = {
             grid: grid,
             level: 0,
-            whichPath: 0
+            whichPath: 0,
+            type: 0
         };
         var topBottomSpec = {
             grid: grid,
             level: 0,
-            whichPath: 2
+            whichPath: 2,
+            type: 0
         }
         testCreepLeftRight = components.Creep.createCreep(leftRightSpec);
         testCreepTopBottom = components.Creep.createCreep(topBottomSpec);
@@ -266,12 +268,36 @@ FORTIFY.model = (function(components, graphics, input, particles) {
         // Projectile updates
         for (i = projectiles.length - 1; i >= 0; i--) {
             projectiles[i].update(elapsedTime);
+            if (projectiles[i].type === 'guided') {
+                var effectSpec = {
+                    type: 'smoke',
+                    center: projectiles[i].center,
+                    speed: {mean: 20, stdev: 2},
+                    size: {mean: 3, stdev: 1},
+                    lifetime: { mean: 0.5, stdev: 0.25},
+                    particleCount: 6,
+                    spin: true
+                }
+                particles.createEffect(effectSpec);
+            }
             if (!projectiles[i].isWithinBounds()) { // if projectile is out of its bounds
                 projectiles.splice(i, 1); // remove it
             } else {
                 for (var j = 0; j < creeps.length; ++j) { // projectile hasn't died let's see if it has collided with any creep
                     if (projectiles[i].didCollideWith(creeps[j])) { // if they collided
                         creeps[j].takeDamage(projectiles[i].damage); // creep takes damage
+                        if (projectiles[i].type === 'guided') {
+                            var effectSpec = {
+                                type: 'fire',
+                                center: projectiles[i].center,
+                                speed: {mean: 10, stdev: 5},
+                                size: {mean: 10, stdev: 1},
+                                lifetime: { mean: 0.5, stdev: 0.3},
+                                particleCount: 20,
+                                spin: true
+                            }
+                            particles.createEffect(effectSpec);
+                        }
                         projectiles.splice(i, 1); // remove projectile
                         break;
                     }

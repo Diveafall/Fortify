@@ -272,6 +272,7 @@ FORTIFY.components = (function(Creep, AnimatedModel) {
         that.color = 'rgba(254, 253, 227, 1)';
         that.strokeColor = 'rgba(112, 246, 90, 1)';
         that.rotation = spec.rotation;
+        that.type = 'laser';
         
         that.rotation = spec.rotation;
         that.moveRate = 400 / 1000; // pixels per second
@@ -286,7 +287,7 @@ FORTIFY.components = (function(Creep, AnimatedModel) {
                 that.frame.right > that.containerFrame.right ||
                 that.frame.bottom > that.containerFrame.bottom) {
                     
-                console.log('projectile out of bounds');
+                //console.log('projectile out of bounds');
                 
                 return false;
             }
@@ -307,6 +308,8 @@ FORTIFY.components = (function(Creep, AnimatedModel) {
                 update: that.update
             };
             
+        that.type = 'guided';
+        
         that.setTarget = function(target) {
             currentTarget = target;
         };

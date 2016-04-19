@@ -178,7 +178,9 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
         }
         
         function vacateLocation() {
-            if (path.length > 0) spec.grid.cellAtLocation(path[0]).vacant();
+            if (path.length > 0 && spec.type !== Constants.airType) {
+                spec.grid.cellAtLocation(path[0]).vacant();
+            }
         }
         
         // Take damage from projectile
@@ -264,14 +266,18 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
             var nextCell = path[0];
             
             if (didEnterNextCell(nextCell)) { // entered new cell
-                spec.grid.cellAtLocation(nextCell).vacant();
+                if (spec.type !== Constants.airType) {
+                    spec.grid.cellAtLocation(nextCell).vacant();
+                }
                 path.shift();
                 if (path.length === 0) {
                     reachedEnd = true;
                     return true;
                 }
                 nextCell = path[0];
-                spec.grid.cellAtLocation(nextCell).occupy();
+                if (spec.type !== Constants.airType) {
+                    spec.grid.cellAtLocation(nextCell).occupy();
+                }
             }
             
             // Direction to move
