@@ -1,5 +1,5 @@
 
-FORTIFY.model = (function(components, graphics, input, particles) {
+FORTIFY.model = (function(components, graphics, input, particles, score) {
 	var grid,
         towers = [],
         creeps = [],
@@ -229,6 +229,7 @@ FORTIFY.model = (function(components, graphics, input, particles) {
                 } else {
                     // TODO - Add points
                     creepDeath(creeps[i]);
+                    score.add(creeps[i].points);
                 }
                 creepsToRemove.push(i);
             }
@@ -342,6 +343,7 @@ FORTIFY.model = (function(components, graphics, input, particles) {
             creeps[i].render(graphics);
         }
         particles.render(graphics);
+        score.render();
 	}
 
 	//------------------------------------------------------------------
@@ -374,4 +376,4 @@ FORTIFY.model = (function(components, graphics, input, particles) {
         creeps: creeps,
         projectiles: projectiles
 	};
-}) (FORTIFY.components, FORTIFY.graphics, FORTIFY.input, FORTIFY.particles);
+}) (FORTIFY.components, FORTIFY.graphics, FORTIFY.input, FORTIFY.particles, FORTIFY.score);
