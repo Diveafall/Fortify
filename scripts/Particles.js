@@ -8,7 +8,8 @@ FORTIFY.particles = (function() {
             smoke: new Image(),
             creep1: new Image(),
             creep2: new Image(),
-            creep3: new Image()
+            creep3: new Image(),
+            dollar: new Image()
         };
     
     images.fire.src = "assets/fire.png";
@@ -16,8 +17,9 @@ FORTIFY.particles = (function() {
     images.creep1.src = "assets/creep1-blue-particle.png";
     images.creep2.src = "assets/creep2-red-particle.png";
     images.creep3.src = "assets/creep3-green-particle.png";
+    images.dollar.src = "assets/dollar.png";
     
-    // spec should have:
+    // spec for text should have:
     // text
     // font '16px Arial'
     // center {x, y}
@@ -33,7 +35,7 @@ FORTIFY.particles = (function() {
         particles[nextName++] = spec;
     }
     
-    //spec should have:
+    // spec for an effect should have:
     // type: fire/smoke
     // center: {x,y}
     // speed {mean, stdev}

@@ -97,8 +97,19 @@ FORTIFY.StatsPanel = (function(model) {
         
         leftButtonPressed: function() {
             if (selectedTower) {
+                var soldEffect = {
+                    type: 'dollar',
+                    center: selectedTower.center,
+                    speed: {mean: 20, stdev: 2}, 
+                    size: {mean: 25, stdev: 10},
+                    lifetime: { mean: 0.75, stdev: 0.25},
+                    particleCount: 10,
+                    spint: true
+                };
+                FORTIFY.particles.createEffect(soldEffect);
+                
                 model.towerSold(selectedTower);
-                statPanel.style.display = 'none'; 
+                statPanel.style.display = 'none';
             }
         },
         
