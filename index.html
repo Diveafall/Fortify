@@ -1,0 +1,147 @@
+<html>
+	<head>
+		<title>Game Layout</title>
+		<link rel="stylesheet" type="text/css" href="styles/style.css">
+	</head>
+	<body onload = "FORTIFY.screens.initialize();">
+        <!-- GAME -->
+        <div id="game">
+            
+            <!-- MAIN MENU PAGE -->
+            <div id="page-mainmenu" class="screen">
+                <ul class="menu">
+                    <li><button id = "id-new-game">New&nbsp;Game</button></li>
+                    <li><button id = "id-high-scores">High&nbsp;Scores</button></li>
+                    <li><button id = "id-help">Help</button></li>
+                    <li><button id = "id-about">About</button></li>
+                </ul>
+            </div>
+            
+            <!-- HIGH SCORE PAGE -->
+            <div id="page-highscores" class="screen">
+                <h1>High Scores</h1>
+                <ol id="high-scores-list">
+                    <li>7000</li>
+                </ol>
+                <ul class = "menu">
+                    <li><button id="id-high-scores-back">Back</button></li>
+                </ul>
+            </div>
+            
+            <!-- HELP PAGE -->
+            <div id = "page-help" class = "screen">
+                <h1>Help</h1>
+                <p>This is some help on how to play the game</p>
+                <ul class = "menu">
+                    <li><button id = "id-help-back">Back</button></li>
+                </ul>
+            </div>
+            
+            <!-- ABOUT PAGE -->
+            <div id = "page-about" class = "screen">
+                <h1>About</h1>
+                <p>Developed by</p>
+                <p>Dr. James Dean Mathias</p>
+                <ul class = "menu">
+                    <li><button id = "id-about-back">Back</button></li>
+                </ul>
+            </div>
+            
+            <!-- GAMEPLAY PAGE -->
+            <div id="page-game" class="screen">
+                
+                <div id="left-panel">
+                    <!-- SCORE PANEL -->
+                    <div id="score-panel">
+                        <ul>
+                            <li><label>TIME: </label><label id="time-label">0:00</label></li>
+                            <li><label>LEVEL: </label><label id="level-label">1</label></li>
+                            <li><label>LIVES: </label><label id="lives-label">50</label></li>
+                            <li><label>GOLD: </label><label>0</label></li>
+                            <li><label>SCORE: </label><label id="score-label">0</label></li>
+                        </ul>
+                    </div>
+                    
+                    <!-- GAME PANEL -->
+                    <div id="game-panel">
+                        <canvas id="canvas-main" width="675px" height="675px"></canvas>
+                    </div>
+                </div>
+                
+                <!-- INFO PANEL -->
+                <div id="info-panel">
+                    
+                    <!-- CONTROL PANEL -->
+                    <div id="control-panel" class="button-container">
+                        <button>Pause</button>
+                        <button>Reset</button>
+                    </div>
+                    
+                    <!-- TOWER PANEL -->
+                    <div id="tower-panel" class="button-container">
+                        <button onclick="FORTIFY.model.towerPurchased(FORTIFY.components.Tower.Turbolaser)">TURBOLASER</button>
+                        <button onclick="FORTIFY.model.towerPurchased(FORTIFY.components.Tower.Vulture)">VULTURE</button>
+                        <button onclick="FORTIFY.model.towerPurchased(FORTIFY.components.Tower.SeismicCharge)">SEISMIC CHARGE</button>
+                        <button onclick="FORTIFY.model.towerPurchased(FORTIFY.components.Tower.TimeWarp)">TIME WARP</button>
+                        <button onclick="FORTIFY.model.towerPurchased(FORTIFY.components.GenericTower)">Flame</button>
+                    </div>
+                    
+                    <!-- STATS PANEL -->
+                    <div id="stats-panel">
+                        <table>
+                            <tr><th colspan="2"><label id="stat-name">TOWER NAME</label></th></tr>
+                            <tr class="damage">
+                                <td class="stat-name"><label>DAMAGE</label></td>
+                                <td><label id="stat-damage">0</label></td>
+                            </tr>
+                            <tr class="radius">
+                                <td class="stat-name"><label>RADIUS</label></td>
+                                <td><label id="stat-radius">0</label></td>
+                            </tr>
+                            <tr class="rate">
+                                <td class="stat-name"><label>RATE</label></td>
+                                <td><label id="stat-rate">0</label></td>
+                            </tr>
+                            <tr class="cost">
+                                <td class="stat-name"><label id="cost-label">COST</label></td>
+                                <td><label id="stat-cost">0</label></td>
+                            </tr>
+                            <tr id="stat-buttons">
+                                <td><button id="left-button" onclick="FORTIFY.StatsPanel.leftButtonPressed()">SELL</button></td>
+                                <td><button id="right-button" onclick="FORTIFY.StatsPanel.rightButtonPressed()">BUY</button></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        <!-- SCRIPTS -->
+        <script>
+            var FORTIFY = {
+                pages : {}
+            };
+        </script>
+        <script src = "scripts/Random.js"></script>
+        <script src = "scripts/Util.js"></script>
+        <script src = "scripts/Graphics.js"></script>
+        <script src = "scripts/Particles.js"></script>
+        <script src = "scripts/AnimatedModel.js"></script>
+        <script src = "scripts/Creep.js"></script>
+        <script src = "scripts/view.js"></script>
+        <script src = "scripts/input.js"></script>
+        <script src = "scripts/screens.js"></script>
+        <script src = "scripts/Components.js"></script>
+        <script src = "scripts/Score.js"></script>
+        <script src = "scripts/GameModel.js"></script>
+        <script src = "scripts/Effect.js"></script>
+        <script src = "scripts/Tower.js"></script>
+        <script src = "scripts/misc.js"></script>
+        <script src = "scripts/page-mainmenu.js"></script>
+        <script src = "scripts/page-game.js"></script>
+        <script src = "scripts/page-highscores.js"></script>
+        <script src = "scripts/page-help.js"></script>
+        <script src = "scripts/page-about.js"></script>
+	</body>
+</html>
