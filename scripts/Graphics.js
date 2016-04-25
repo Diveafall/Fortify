@@ -132,8 +132,8 @@ FORTIFY.graphics = (function() {
 	// Draw tower
 	//
 	//------------------------------------------------------------------
-	function drawTower(tower, a) {
-        tower.render(context, a);
+	function drawTower(tower) {
+        tower.render(context);
 	}
     
     //------------------------------------------------------------------

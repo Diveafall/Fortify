@@ -191,4 +191,26 @@ FORTIFY.View = function(specs) {
     };
     
     return that;
-}
+};
+
+
+/**
+ * View that can be upgraded. Must include initial level and array of levels
+ * 
+ * @constructor
+ */
+FORTIFY.UpgradableView = function(spec) {
+    var that = FORTIFY.View(spec);  
+    
+    that.canUpgrade = function() {
+        return spec.level + 1 < spec.levels.length;
+    };
+    
+    that.upgrade = function() {
+        if (that.canUpgrade()) {
+            spec.level++;
+        }
+    };
+    
+    return that;
+};

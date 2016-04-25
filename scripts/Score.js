@@ -53,6 +53,7 @@ FORTIFY.score = (function() {
         http.open("GET", "/v1/scores", true);
         http.send();
     }
+    
     updateHighscores();
 
     function getHighscores() {

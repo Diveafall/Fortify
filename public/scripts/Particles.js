@@ -31,6 +31,7 @@ FORTIFY.particles = (function() {
         spec.position = spec.center;
         spec.alive = 0;
         spec.spin = false;
+        spec.color = 'white';
         
         particles[nextName++] = spec;
     }
@@ -128,10 +129,15 @@ FORTIFY.particles = (function() {
         }
     }
     
+    function reset() {
+        particles = {};
+    }
+    
     return {
         createText: createText,
         createEffect: createEffect,
         update: update,
-        render: render
+        render: render,
+        reset: reset
     };
 }());

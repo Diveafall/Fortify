@@ -1,8 +1,7 @@
 /*global FORTIFY, console, KeyEvent, requestAnimationFrame, performance */
 
 FORTIFY.pages['page-game'] = (function(gameModel, screens, graphics, input) {
-	var keyboard = input.Keyboard(),
-		cancelNextRequest = false,
+	var cancelNextRequest = false,
 		lastTimeStamp = performance.now();
 
 	//------------------------------------------------------------------
@@ -11,14 +10,19 @@ FORTIFY.pages['page-game'] = (function(gameModel, screens, graphics, input) {
 	function initialize() {
 		console.log('game initializing...');
 
-		keyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function() {
-			//
-			// Stop the game loop by canceling the request for the next animation frame
-			cancelNextRequest = true;
-			//
-			// Then, return to the main menu
-			screens.showScreen('page-mainmenu');
-		});
+		// keyboard.registerCommand({ key: KeyEvent.DOM_VK_ESCAPE }, function() {
+		// 	//
+		// 	// Stop the game loop by canceling the request for the next animation frame
+		// 	cancelNextRequest = true;
+		// 	//
+		// 	// Then, return to the main menu
+		// 	screens.showScreen('page-mainmenu');
+		// });
+	}
+	
+	function pause() {
+		cancelNextRequest = true;
+		screens.showScreen('page-mainmenu');
 	}
 
 	//------------------------------------------------------------------
@@ -27,7 +31,6 @@ FORTIFY.pages['page-game'] = (function(gameModel, screens, graphics, input) {
 	//
 	//------------------------------------------------------------------
 	function processInput(elapsedTime) {
-		keyboard.update(elapsedTime);
 		gameModel.processInput(elapsedTime);
 	}
 
@@ -83,6 +86,7 @@ FORTIFY.pages['page-game'] = (function(gameModel, screens, graphics, input) {
 
 	return {
 		initialize : initialize,
-		run : run
+		run : run,
+		pause: pause
 	};
-}(FORTIFY.model, FORTIFY.screens, FORTIFY.graphics, FORTIFY.input));
+} (FORTIFY.model, FORTIFY.screens, FORTIFY.graphics, FORTIFY.input));

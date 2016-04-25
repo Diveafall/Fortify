@@ -53,7 +53,6 @@ FORTIFY.graphics = (function() {
 		context.save();
 
 		context.font = spec.font;
-		context.fillStyle = spec.fill;
 		if (spec.hasOwnProperty('stroke')) {
 			context.strokeStyle = spec.stroke;
 		}
@@ -96,6 +95,9 @@ FORTIFY.graphics = (function() {
 	function drawText(spec) {
 		context.save();
 
+		if (spec.hasOwnProperty('color')) {
+			context.fillStyle = spec.color;
+		}
 		context.font = spec.font;
 		if (spec.hasOwnProperty('fill')) {
 			context.fillStyle = spec.fill;
@@ -126,14 +128,20 @@ FORTIFY.graphics = (function() {
 		
 		context.restore();
 	}
-    
+	
+	function drawBackground(spec) {
+		context.save();
+		context.drawImage(FORTIFY.components.Managers.ImageManager.getImage('background'), spec.origin.x, spec.origin.y, spec.size.width, spec.size.height);
+		context.restore();
+	}
+     
     //------------------------------------------------------------------
 	//
 	// Draw tower
 	//
 	//------------------------------------------------------------------
-	function drawTower(tower, a) {
-        tower.render(context, a);
+	function drawTower(tower) {
+        tower.render(context);
 	}
     
     //------------------------------------------------------------------
@@ -278,6 +286,7 @@ FORTIFY.graphics = (function() {
 		drawImage: drawImage,
         drawTower: drawTower,
         drawProjectile: drawProjectile,
+		drawBackground: drawBackground,
 		SpriteSheet: SpriteSheet,
 		measureTextWidth: measureTextWidth,
 		measureTextHeight: measureTextHeight

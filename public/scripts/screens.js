@@ -46,7 +46,7 @@ FORTIFY.screens = (function(pages) {
 
 		//
 		// Make the main-menu screen the active one
-		showScreen('page-game');
+		showScreen('page-mainmenu');
 	}
 
 	return {

@@ -1,10 +1,11 @@
 
 FORTIFY.Creep = (function(Util, AnimatedModel) {
     
+    var CREEPTYPE = { GROUND: 0, GROUND2: 1, AIR: 2 };
+    
     var Constants = {
         get creepCellSize() { return 0.75; },
-        get creepHealth() { return 200; },
-        get creepColor() { return "#0000FF"; },
+        get creepHealth() { return 100; },
         get creepSpeed() { return 0.04; },
         get creepSpeedPerLevel() { return 0.005; },
         get creepPoints() { return 20; },
@@ -154,7 +155,6 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
         var that = FORTIFY.View(sizeSpec);
         
         // Size values for creep
-        that.creepColor = Constants.creepColor;
         that.cellSize = sizeSpec.cellSize;
         that.radius = that.height / 2;
         that.center = Util.pointCoordFromLocation(spawnLoc.row, spawnLoc.col);
@@ -167,6 +167,9 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
                 points *= 1.5;
             }
             return points;
+        })();
+        that.gold = (function() {
+            return Math.floor(that.points * 0.5);
         })();
         
         // return the total number of cells required for this creep
@@ -370,6 +373,7 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
     }
     
     return {
-        createCreep: createCreep
+        createCreep: createCreep,
+        CREEPTYPE: CREEPTYPE
     }
 })(FORTIFY.Util, FORTIFY.AnimatedModel);

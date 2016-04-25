@@ -1,9 +1,9 @@
-FORTIFY.Clock = function(outputElement) {
+FORTIFY.Clock = (function() {
     function timestamp() {
         return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
     }
     
-    var begin, isActive = false, time = {}, output = outputElement;
+    var begin, isActive = false, time = {}, output = document.getElementById('time-label');
     
     return {
         /**
@@ -14,6 +14,9 @@ FORTIFY.Clock = function(outputElement) {
         start: function() {
             isActive = true;
             begin = timestamp();
+        },
+        resume: function() {
+            isActive = true;
         },
         pause: function() {
             isActive = false;
@@ -26,12 +29,12 @@ FORTIFY.Clock = function(outputElement) {
             }
         },
         outputClock: function() {
-            //output.innerHTML = time.minutes + (time.seconds < 10 ? ':0' : ':') + time.seconds;
+            if(isActive) output.innerHTML = time.minutes + (time.seconds < 10 ? ':0' : ':') + time.seconds;
         }
     };
-};
+}) ();
 
-FORTIFY.StatsPanel = (function(model) {
+FORTIFY.StatsPanel = (function() {
     var statPanel = document.getElementById('stats-panel'),
     
         nameLabel = document.getElementById('stat-name'),
@@ -55,6 +58,44 @@ FORTIFY.StatsPanel = (function(model) {
             get maxLevelString() { return 'MAX LEVEL'; }
         };
         
+    function towerSelected(tower, buying) {
+        if (tower) {
+            statPanel.style.display = 'inline';
+            
+            selectedTower = tower;
+            selectedTower.showRadius(true);
+            
+            nameLabel.innerHTML = selectedTower.name;
+            damageLabel.innerHTML = Math.floor(selectedTower.damage);
+            radiusLabel.innerHTML = Math.floor(selectedTower.shootRadius);
+            rateLabel.innerHTML = Math.floor(selectedTower.shootRate);
+            
+            if (buying) {
+                costTypeLabel.innerHTML = 'PRICE';
+                buttons.style.display = 'none';
+                costLabel.innerHTML = Math.floor(selectedTower.purchaseCost);
+                
+            } else {
+                costTypeLabel.innerHTML = 'COST';
+                buttons.style.display = 'table-row';
+                costLabel.innerHTML = Math.floor(selectedTower.sellCost);
+                if (tower.canUpgrade()) {
+                    rightButton.disabled = false;
+                    rightButton.innerHTML = Constants.upgradeString;
+                } else {
+                    rightButton.disabled = true;
+                    rightButton.innerHTML = Constants.maxLevelString;
+                }
+            }
+        } else {
+            statPanel.style.display = 'none';
+            if (selectedTower) {
+                selectedTower.showRadius(false);
+                selectedTower = undefined;
+            }
+        }
+    }
+    
     return {
         /**
          * Shows the tower statistics in the Stats Panel
@@ -62,38 +103,7 @@ FORTIFY.StatsPanel = (function(model) {
          * @param tower Tower that is selected
          * @param buying True if currently buying the tower
          */
-        towerSelected: function(tower, buying) {
-            if (tower) {
-                statPanel.style.display = 'inline';
-                
-                selectedTower = tower;
-                
-                nameLabel.innerHTML = selectedTower.name;
-                damageLabel.innerHTML = Math.floor(selectedTower.damage);
-                radiusLabel.innerHTML = Math.floor(selectedTower.shootRadius);
-                rateLabel.innerHTML = Math.floor(selectedTower.shootRate);
-                
-                if (buying) {
-                    costTypeLabel.innerHTML = 'PRICE';
-                    buttons.style.display = 'none';
-                    costLabel.innerHTML = Math.floor(selectedTower.purchaseCost);
-                    
-                } else {
-                    costTypeLabel.innerHTML = 'COST';
-                    buttons.style.display = 'table-row';
-                    costLabel.innerHTML = Math.floor(selectedTower.sellCost);
-                    if (tower.canUpgrade()) {
-                        rightButton.disabled = false;
-                        rightButton.innerHTML = Constants.upgradeString;
-                    } else {
-                        rightButton.disabled = true;
-                        rightButton.innerHTML = Constants.maxLevelString;
-                    }
-                }
-            } else {
-                statPanel.style.display = 'none';
-            }
-        },
+        towerSelected: towerSelected,
         
         leftButtonPressed: function() {
             if (selectedTower) {
@@ -108,7 +118,7 @@ FORTIFY.StatsPanel = (function(model) {
                 };
                 FORTIFY.particles.createEffect(soldEffect);
                 
-                model.towerSold(selectedTower);
+                FORTIFY.model.towerSold(selectedTower);
                 statPanel.style.display = 'none';
             }
         },
@@ -117,13 +127,17 @@ FORTIFY.StatsPanel = (function(model) {
             if (rightButton.innerHTML === Constants.upgradeString) {
                 if (selectedTower) {
                     selectedTower.upgrade();
-                    this.towerSelected(selectedTower);
+                    towerSelected(selectedTower);
                 }
             }
         },
         
         hide: function() {
+            if (selectedTower) {
+                selectedTower.showRadius(false);
+                selectedTower = undefined;
+            }
             statPanel.style.display = 'none';
         }
     };
-})(FORTIFY.model);
+})();

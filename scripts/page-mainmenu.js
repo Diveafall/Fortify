@@ -13,9 +13,9 @@ FORTIFY.pages['page-mainmenu'] = (function(screens) {
 			'click',
 			function() { screens.showScreen('page-highscores'); });
 
-		document.getElementById('id-help').addEventListener(
+		document.getElementById('id-controls').addEventListener(
 			'click',
-			function() { screens.showScreen('page-help'); });
+			function() { screens.showScreen('page-controls'); });
 
 		document.getElementById('id-about').addEventListener(
 			'click',

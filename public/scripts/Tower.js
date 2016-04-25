@@ -1,52 +1,197 @@
 FORTIFY.components.Tower = (function(model, components) {
-    
-    /**
-     * Represents a generic tower
-     * 
-     * @constructor
-     * @param frame x, y, width, and height values
-     * @param cellSize Number of rows and columns required in the grid
-     * @param Projectile Type of projectile this tower fires
-     * @param projectiles a container for projectiles
-     */
+    var CREEPTYPE = FORTIFY.Creep.CREEPTYPE;
+    var Constants = {
+        Blastoise: {
+            indentRatio: 0.1,
+            shootableCreeps: [CREEPTYPE.GROUND, CREEPTYPE.GROUND2, CREEPTYPE.AIR],
+            shootSound: 'blast',
+            levels: [
+                {
+                    name: "BLASTOISE",
+                    damage: 10,
+                    shootRate: 1000 / 5,
+                    shootRadius: 100,
+                    purchaseCost: 5,
+                    sellCost: 3,
+                    image: components.Managers.ImageManager.getImage('blastoise-1')
+                },
+                {
+                    name: "MEGA BLASTOISE",
+                    damage: 15,
+                    shootRate: 1000 / 6,
+                    shootRadius: 150,
+                    purchaseCost: 10,
+                    sellCost: 7,
+                    image: components.Managers.ImageManager.getImage('blastoise-2')
+                },
+                {
+                    name: "GIGA BLASTOISE",
+                    damage: 20,
+                    shootRate: 1000 / 7,
+                    shootRadius: 200,
+                    purchaseCost: 15,
+                    sellCost: 12,
+                    image: components.Managers.ImageManager.getImage('blastoise-2')
+                }
+            ]
+        },
+        Vulture: {
+            indentRatio: 0.1,
+            shootableCreeps: [CREEPTYPE.AIR],
+            shootSound: 'missile',
+            levels: [
+                {
+                    name: "VULTURE",
+                    damage: 25,
+                    shootRate: 1000 / 1,
+                    shootRadius: 200,
+                    purchaseCost: 5,
+                    sellCost: 3,
+                    image: components.Managers.ImageManager.getImage('vulture-1')
+                },
+                {
+                    name: "MEGA VULTURE",
+                    damage: 35,
+                    shootRate: 1000 / 2,
+                    shootRadius: 250,
+                    purchaseCost: 10,
+                    sellCost: 7,
+                    image: components.Managers.ImageManager.getImage('vulture-2')
+                },
+                {
+                    name: "HYPER VULTURE",
+                    damage: 45,
+                    shootRate: 1000 / 3,
+                    shootRadius: 300,
+                    purchaseCost: 15,
+                    sellCost: 12,
+                    image: components.Managers.ImageManager.getImage('vulture-3')
+                }
+            ]
+        },
+        SeismicCharge: {
+            indentRatio: 0.1,
+            shootableCreeps: [CREEPTYPE.GROUND, CREEPTYPE.GROUND2],
+            shootSound: 'seismic',
+            levels: [
+                {
+                    name: "SEISMIC CHARGE",
+                    damage: 25,
+                    shootRate: 1000 / 1,
+                    shootRadius: 100,
+                    purchaseCost: 5,
+                    sellCost: 3,
+                    image: components.Managers.ImageManager.getImage('seismic-1')
+                },
+                {
+                    name: "MEGA SEISMIC CHARGE",
+                    damage: 35,
+                    shootRate: 1000 / 2,
+                    shootRadius: 150,
+                    purchaseCost: 10,
+                    sellCost: 7,
+                    image: components.Managers.ImageManager.getImage('seismic-2')
+                },
+                {
+                    name: "HYPER SEISMIC CHARGE",
+                    damage: 45,
+                    shootRate: 1000 / 3,
+                    shootRadius: 200,
+                    purchaseCost: 15,
+                    sellCost: 12,
+                    image: components.Managers.ImageManager.getImage('seismic-3')
+                }
+            ]
+        },
+        TimeWarp: {
+            indentRatio: 0.1,
+            shootableCreeps: [CREEPTYPE.GROUND, CREEPTYPE.GROUND2],
+            shootSound: 'warp',
+            levels: [
+                {
+                    name: "TIME WARP",
+                    damage: 0,
+                    shootRate: 1000 / 1,
+                    shootRadius: 100,
+                    purchaseCost: 5,
+                    sellCost: 3,
+                    image: components.Managers.ImageManager.getImage('timewarp-1')
+                },
+                {
+                    name: "TIME MEGA WARP",
+                    damage: 0,
+                    shootRate: 1000 / 2,
+                    shootRadius: 150,
+                    purchaseCost: 10,
+                    sellCost: 7,
+                    image: components.Managers.ImageManager.getImage('timewarp-2')
+                },
+                {
+                    name: "TIME HYPER WARP",
+                    damage: 0,
+                    shootRate: 1000 / 3,
+                    shootRadius: 200,
+                    purchaseCost: 15,
+                    sellCost: 12,
+                    image: components.Managers.ImageManager.getImage('timewarp-3')
+                }
+            ]
+        }
+    };
+
     function Tower(spec) {
         
         var width = spec.cellSize.horizCells * components.Constants.gridCellDimentions.width, 
-            height = spec.cellSize.vertiCells * components.Constants.gridCellDimentions.height;
+            height = spec.cellSize.vertiCells * components.Constants.gridCellDimentions.height,
+            showRadius = false;
+            
         spec.frame = { x: -width, y: -height, width: width, height: height };
         
-        var that = FORTIFY.View(spec), // this tower is a view
-            fireTimer = 0, // timer for firing rate
-            currentLevel = 0;
-            
-        function setLevel(level) {
-            if (level >= spec.levels.length) return;
-            currentLevel = level;
-        }
+        var that = FORTIFY.UpgradableView(spec), // this tower is a view
+            fireTimer = 0; // timer for firing rate
         
         Object.defineProperty(that, 'name', {
-            get: function() { return spec.levels[currentLevel].name; }
+            get: function() { return spec.levels[spec.level].name; }
         });
         
         Object.defineProperty(that, 'shootRadius', {
-            get: function() { return spec.levels[currentLevel].shootRadius; }
+            get: function() { return spec.levels[spec.level].shootRadius; }
         });
         
         Object.defineProperty(that, 'shootRate', {
-            get: function() { return spec.levels[currentLevel].shootRate; }
+            get: function() { return spec.levels[spec.level].shootRate; }
         });
         
         Object.defineProperty(that, 'damage', {
-            get: function() { return spec.levels[currentLevel].damage; }
+            get: function() { return spec.levels[spec.level].damage; }
         });
         
         Object.defineProperty(that, 'purchaseCost', {
-            get: function() { return spec.levels[currentLevel].purchaseCost; }
+            get: function() { return spec.levels[spec.level].purchaseCost; }
         });
         
         Object.defineProperty(that, 'sellCost', {
-            get: function() { return spec.levels[currentLevel].sellCost; }
+            get: function() { return spec.levels[spec.level].sellCost; }
         });
+ 
+        Object.defineProperty(that, 'image', {
+            get: function() { return spec.levels[spec.level].image; }
+        });
+        
+        // makes the shooting radius visible
+        that.showRadius = function(value) {
+            showRadius = value;
+        };
+        
+        // returns true if the creep is shootable
+        that.canShoot = function(creep) {
+            for (var i = 0; i < spec.shootableCreeps.length; ++i) {
+                if (creep.type === spec.shootableCreeps[i]) {
+                    return true;
+                }
+            }
+            return false;
+        };
         
         // handles cooldown and firing
         spec.coolDown = function(elapsedTime) {
@@ -67,29 +212,26 @@ FORTIFY.components.Tower = (function(model, components) {
         that.cellSize = spec.cellSize;
         that.radius = that.height / 3;
         
-        // set initial level
-        setLevel(0);
-        
         // returns true if object is withing shooting range
         that.objectIsWithinRange = function(object) {
             if (that.shootRadius > that.center.distance(object.center)) return true;
             return false;
         };
         
-        // returns true if upgrade is possible
-        that.canUpgrade = function() {
-            return currentLevel < spec.levels.length - 1;
-        };
-        
-        // upgrades the tower if not last level
-        that.upgrade = function() {
-            if (currentLevel + 1 < spec.levels.length) {
-                currentLevel++;
-            }
-        };
-        
         // return the total number of cells required for this tower
         that.totalCells = function() { return spec.cellSize.horizCells * spec.cellSize.vertiCells; };
+        
+        that.render = function(context) {
+            if (showRadius) {
+                context.save();
+                context.globalAlpha = 0.5;
+                context.fillStyle = 'lightgrey';
+                context.beginPath();
+                context.arc(that.center.x, that.center.y, that.shootRadius, 0, 2 * Math.PI);
+                context.fill();
+                context.restore();
+            }
+        };
         
         return that;
     }
@@ -118,8 +260,8 @@ FORTIFY.components.Tower = (function(model, components) {
                 frame: {
                     x: 0,
                     y: 0,
-                    width: that.width * 0.3,
-                    height: that.cannonWidth
+                    width: that.width * 0.2,
+                    height: that.width * 0.05
                 }
             });
             
@@ -127,6 +269,7 @@ FORTIFY.components.Tower = (function(model, components) {
             newProjectile.setTarget && newProjectile.setTarget(currentTarget);
             
             model.projectiles.push(newProjectile);
+            components.Managers.SoundManager.playSound(spec.shootSound);
         };
         
         that.update = function(elapsedTime) {
@@ -135,7 +278,7 @@ FORTIFY.components.Tower = (function(model, components) {
             currentTarget = undefined;
             
             for (var i = 0; i < creeps.length; ++i) {
-                if (!that.objectIsWithinRange(creeps[i]) && creeps[i].isDead()) continue; // if the creep is outside of range or dead, move on
+                if (!that.objectIsWithinRange(creeps[i]) && creeps[i].isDead() && !that.canShoot(creeps[i])) continue; // if the creep is outside of range or dead or can't be shot, move on
                 distance = that.center.distance(creeps[i].center);
                 if (distance < closestObjectDistance) { // this new guy is closer than the old guy
                     closestObjectDistance = distance;
@@ -177,6 +320,7 @@ FORTIFY.components.Tower = (function(model, components) {
         return that;
     }
     
+    // Area of Effect Tower
     function AOETower(spec) {
         var that = Tower(spec);
         
@@ -185,12 +329,14 @@ FORTIFY.components.Tower = (function(model, components) {
         
         // affect every alive creep within range
         that.fire = function() {
-            var creeps = model.creeps;
+            var creeps = model.creeps, didAffectSomeone = false;
             for (var i = 0; i < creeps.length; ++i) {
-                if (that.objectIsWithinRange(creeps[i]) && !creeps[i].isDead()) { // if creep is within range and not dead
+                if (that.objectIsWithinRange(creeps[i]) && !creeps[i].isDead() && that.canShoot(creeps[i])) { // if creep is within range and not dead
                     that.affect(creeps[i]);
+                    didAffectSomeone = true;
                 }
             }
+            if (didAffectSomeone) components.Managers.SoundManager.playSound(spec.shootSound);
         };
         
         // AOE towers don't need to turn, they just fire every time cooldown is over
@@ -201,66 +347,30 @@ FORTIFY.components.Tower = (function(model, components) {
         return that;
     }
     
-    function Turbolaser(spec) {
+    function Blastoise(spec) {
         var tower =  STower({ 
-            cellSize: { horizCells: 3, vertiCells: 3 },
-            containerFrame: spec.containerFrame,
-            Projectile: components.Projectile,
-            levels: [
-                {
-                    name: "TURBO LASER",
-                    damage: 10,
-                    shootRate: 1000 / 5,
-                    shootRadius: 100,
-                    purchaseCost: 5,
-                    sellCost: 3
-                },
-                {
-                    name: "MEGA LASER",
-                    damage: 15,
-                    shootRate: 1000 / 6,
-                    shootRadius: 150,
-                    purchaseCost: 10,
-                    sellCost: 7
-                },
-                {
-                    name: "HYPER LASER",
-                    damage: 20,
-                    shootRate: 1000 / 7,
-                    shootRadius: 200,
-                    purchaseCost: 15,
-                    sellCost: 12
-                }
-            ]
-        });
+                cellSize: { horizCells: 3, vertiCells: 3 },
+                containerFrame: spec.containerFrame,
+                Projectile: components.Projectile,
+                level: spec.level,
+                levels: Constants.Blastoise.levels,
+                shootableCreeps: Constants.Blastoise.shootableCreeps,
+                shootSound: Constants.Blastoise.shootSound
+            }), base = { render: tower.render };
         
-        tower.render = function(context, a) {
-            // Draw base
-            if (a) {
-                context.save();
-                context.fillStyle = 'lightgrey';
-                context.beginPath();
-                context.arc(tower.center.x, tower.center.y, tower.shootRadius, 0, 2 * Math.PI);
-                context.fill();
-                context.restore();
-            }
-            
-            // Draw base
-            context.save();
-            context.fillStyle = tower.baseColor;
-            context.beginPath();
-            context.arc(tower.center.x, tower.center.y, tower.radius, 0, 2 * Math.PI);
-            context.fill();
-            context.restore();
-            
-            // Draw cannon
+        tower.render = function(context) {
+            var indent = tower.width * Constants.Blastoise.indentRatio;
+            base.render(context);
             context.save();
             context.translate(tower.center.x, tower.center.y);
             context.rotate(tower.angle);
             context.translate(-tower.center.x, -tower.center.y);
-            context.fillStyle = tower.cannonColor;
-            context.fillRect(tower.center.x, tower.center.y - tower.cannonWidth / 2, tower.width / 2, tower.cannonWidth);
-            
+            context.drawImage(
+                tower.image, tower.origin.x + indent, 
+                tower.origin.y + indent, 
+                tower.width - 2 * indent, 
+                tower.height - 2 * indent
+            );
             context.restore();
         }
         
@@ -269,64 +379,28 @@ FORTIFY.components.Tower = (function(model, components) {
     
     function Vulture(spec) {
         var tower =  STower({ 
-            cellSize: { horizCells: 3, vertiCells: 3 },
-            containerFrame: spec.containerFrame,
-            Projectile: components.GuidedProjectile,
-            levels: [
-                {
-                    name: "VULTURE",
-                    damage: 25,
-                    shootRate: 1000 / 1,
-                    shootRadius: 200,
-                    purchaseCost: 5,
-                    sellCost: 3
-                },
-                {
-                    name: "MEGA VULTURE",
-                    damage: 35,
-                    shootRate: 1000 / 2,
-                    shootRadius: 250,
-                    purchaseCost: 10,
-                    sellCost: 7
-                },
-                {
-                    name: "HYPER VULTURE",
-                    damage: 45,
-                    shootRate: 1000 / 3,
-                    shootRadius: 300,
-                    purchaseCost: 15,
-                    sellCost: 12
-                }
-            ]
-        });
-        
+                cellSize: { horizCells: 3, vertiCells: 3 },
+                containerFrame: spec.containerFrame,
+                Projectile: components.GuidedProjectile,
+                level: spec.level,
+                levels: Constants.Vulture.levels,
+                shootableCreeps: Constants.Vulture.shootableCreeps,
+                shootSound: Constants.Vulture.shootSound
+            }), base = { render: tower.render };
+            
         tower.render = function(context, a) {
-            // Draw base
-            if (a) {
-                context.save();
-                context.fillStyle = 'lightgrey';
-                context.beginPath();
-                context.arc(tower.center.x, tower.center.y, tower.shootRadius, 0, 2 * Math.PI);
-                context.fill();
-                context.restore();
-            }
-            
-            // Draw base
-            context.save();
-            context.fillStyle = tower.baseColor;
-            context.beginPath();
-            context.arc(tower.center.x, tower.center.y, tower.radius, 0, 2 * Math.PI);
-            context.fill();
-            context.restore();
-            
-            // Draw cannon
+            var indent = tower.width * Constants.Vulture.indentRatio;
+            base.render(context);
             context.save();
             context.translate(tower.center.x, tower.center.y);
             context.rotate(tower.angle);
             context.translate(-tower.center.x, -tower.center.y);
-            context.fillStyle = tower.cannonColor;
-            context.fillRect(tower.center.x, tower.center.y - tower.cannonWidth / 2, tower.width / 2, tower.cannonWidth);
-            
+            context.drawImage(
+                tower.image, tower.origin.x + indent, 
+                tower.origin.y + indent, 
+                tower.width - 2 * indent, 
+                tower.height - 2 * indent
+            );
             context.restore();
         }
         
@@ -335,61 +409,28 @@ FORTIFY.components.Tower = (function(model, components) {
     
     function SeismicCharge(spec) {
         var tower =  AOETower({ 
-            cellSize: { horizCells: 3, vertiCells: 3 },
-            containerFrame: spec.containerFrame,
-            levels: [
-                {
-                    name: "SEISMIC CHARGE",
-                    damage: 25,
-                    shootRate: 1000 / 1,
-                    shootRadius: 100,
-                    purchaseCost: 5,
-                    sellCost: 3
-                },
-                {
-                    name: "MEGA SEISMIC CHARGE",
-                    damage: 35,
-                    shootRate: 1000 / 2,
-                    shootRadius: 150,
-                    purchaseCost: 10,
-                    sellCost: 7
-                },
-                {
-                    name: "HYPER SEISMIC CHARGE",
-                    damage: 45,
-                    shootRate: 1000 / 3,
-                    shootRadius: 200,
-                    purchaseCost: 15,
-                    sellCost: 12
-                }
-            ]
-        });
-        
-        tower.baseColor = '#3F00FF';
-        
+                cellSize: { horizCells: 3, vertiCells: 3 },
+                containerFrame: spec.containerFrame,
+                level: spec.level,
+                levels: Constants.SeismicCharge.levels,
+                shootableCreeps: Constants.SeismicCharge.shootableCreeps,
+                shootSound: Constants.SeismicCharge.shootSound
+            }), base = { render: tower.render };
+            
         tower.affect = function(creep) {
             creep.takeDamage(tower.damage);
         }
         
-        tower.render = function(context, a) {
-            // Draw radius
-            if (a) {
-                context.save();
-                context.fillStyle = 'lightgrey';
-                context.beginPath();
-                context.arc(tower.center.x, tower.center.y, tower.shootRadius, 0, 2 * Math.PI);
-                context.fill();
-                context.restore();
-            }
-            
-            // Draw base
+        tower.render = function(context) {
+            var indent = tower.width * Constants.SeismicCharge.indentRatio;
+            base.render(context);
             context.save();
-            context.fillStyle = tower.baseColor;
-            context.beginPath();
-            context.arc(tower.center.x, tower.center.y, tower.radius, 0, 2 * Math.PI);
-            context.fill();
-            context.restore();
-            
+            context.drawImage(
+                tower.image, tower.origin.x + indent, 
+                tower.origin.y + indent, 
+                tower.width - 2 * indent, 
+                tower.height - 2 * indent
+            );
             context.restore();
         }
         
@@ -398,59 +439,28 @@ FORTIFY.components.Tower = (function(model, components) {
     
     function TimeWarp(spec) {
         var tower =  AOETower({ 
-            cellSize: { horizCells: 3, vertiCells: 3 },
-            containerFrame: spec.containerFrame,
-            levels: [
-                {
-                    name: "TIME WARP",
-                    damage: 0,
-                    shootRate: 1000 / 1,
-                    shootRadius: 100,
-                    purchaseCost: 5,
-                    sellCost: 3
-                },
-                {
-                    name: "TIME MEGA WARP",
-                    damage: 0,
-                    shootRate: 1000 / 2,
-                    shootRadius: 150,
-                    purchaseCost: 10,
-                    sellCost: 7
-                },
-                {
-                    name: "TIME HYPER WARP",
-                    damage: 0,
-                    shootRate: 1000 / 3,
-                    shootRadius: 200,
-                    purchaseCost: 15,
-                    sellCost: 12
-                }
-            ]
-        });
+                cellSize: { horizCells: 3, vertiCells: 3 },
+                containerFrame: spec.containerFrame,
+                level: spec.level,
+                levels: Constants.TimeWarp.levels,
+                shootableCreeps: Constants.TimeWarp.shootableCreeps,
+                shootSound: Constants.TimeWarp.shootSound
+            }), base = { render: tower.render };
         
         tower.affect = function(creep) {
             creep.applyEffect(components.Effect.SlowEffect());
         }
         
-        tower.render = function(context, a) {
-            // Draw radius
-            if (a) {
-                context.save();
-                context.fillStyle = 'lightgrey';
-                context.beginPath();
-                context.arc(tower.center.x, tower.center.y, tower.shootRadius, 0, 2 * Math.PI);
-                context.fill();
-                context.restore();
-            }
-            
-            // Draw base
+        tower.render = function(context) {
+            var indent = tower.width * Constants.TimeWarp.indentRatio;
+            base.render(context);
             context.save();
-            context.fillStyle = tower.baseColor;
-            context.beginPath();
-            context.arc(tower.center.x, tower.center.y, tower.radius, 0, 2 * Math.PI);
-            context.fill();
-            context.restore();
-            
+            context.drawImage(
+                tower.image, tower.origin.x + indent, 
+                tower.origin.y + indent, 
+                tower.width - 2 * indent, 
+                tower.height - 2 * indent
+            );
             context.restore();
         }
         
@@ -458,7 +468,7 @@ FORTIFY.components.Tower = (function(model, components) {
     }
     
     return {
-        Turbolaser: Turbolaser,
+        Blastoise: Blastoise,
         Vulture: Vulture,
         SeismicCharge: SeismicCharge,
         TimeWarp: TimeWarp
