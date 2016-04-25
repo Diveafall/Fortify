@@ -23,11 +23,7 @@ FORTIFY.model = (function(components, graphics, particles, score) {
 	function initialize() {
         console.log('game model initialization');
         
-<<<<<<< HEAD
-        remainingLives = 20;
-=======
         remainingLives = 10;
->>>>>>> c89fdac8f176fa914c42715a70c551da283d81f3
         gameOver = false;
         particles.reset();
         score.reset();
@@ -289,11 +285,7 @@ FORTIFY.model = (function(components, graphics, particles, score) {
     
     function endGame() {
         gameOver = true;
-<<<<<<< HEAD
         score.addEndGameScore(towers, levels.getLevel());
-=======
-        score.addEndGameScore(towers, levels.getCurrentLevel());
->>>>>>> c89fdac8f176fa914c42715a70c551da283d81f3
         score.submit();
         console.log("Game over!");
     }

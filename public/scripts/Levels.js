@@ -264,10 +264,6 @@ FORTIFY.Levels = function(creeps, grid, treasury, gameOver) {
         }
     }
     
-    function getCurrentLevel() {
-        return currentLevel;
-    }
-    
     function update(elapsedTime) {
         internalUpdate(elapsedTime);        
     }
@@ -278,10 +274,6 @@ FORTIFY.Levels = function(creeps, grid, treasury, gameOver) {
         nextWave: nextWave,
         restartLevel: restartLevel,
         isWaveInProgress: isWaveInProgress,
-<<<<<<< HEAD
         getLevel: function() { return currentLevel; }
-=======
-        getCurrentLevel: getCurrentLevel
->>>>>>> c89fdac8f176fa914c42715a70c551da283d81f3
     };
 };
