@@ -58,6 +58,82 @@ FORTIFY.Levels = function(creeps, grid, treasury, gameOver) {
                         gold: 25
                     }
                 ]   
+            },
+            { // LEVEL 3
+                waves: [
+                    {
+                        army: [
+                            {
+                                path: 3,
+                                type: FORTIFY.Creep.CREEPTYPE.AIR,
+                                count: 10
+                            },
+                            {
+                                path: 0,
+                                type: FORTIFY.Creep.CREEPTYPE.GROUND,
+                                count: 10
+                            },
+                            {
+                                path: 2,
+                                type: FORTIFY.Creep.CREEPTYPE.GROUND2,
+                                count: 10
+                            }
+                        ],
+                        gold: 50
+                    },
+                    {
+                        army: [
+                            {
+                                path: 0,
+                                type: FORTIFY.Creep.CREEPTYPE.GROUND,
+                                count: 30
+                            },
+                            {
+                                path: 2,
+                                type: FORTIFY.Creep.CREEPTYPE.AIR,
+                                count: 10
+                            }
+                        ]
+                    }
+                ]   
+            },
+            { // LEVEL 4
+                waves: [
+                    {
+                        army: [
+                            {
+                                path: 2,
+                                type: FORTIFY.Creep.CREEPTYPE.AIR,
+                                count: 10
+                            },
+                            {
+                                path: 1,
+                                type: FORTIFY.Creep.CREEPTYPE.GROUND,
+                                count: 20
+                            },
+                            {
+                                path: 2,
+                                type: FORTIFY.Creep.CREEPTYPE.GROUND2,
+                                count: 20
+                            }
+                        ],
+                        gold: 50
+                    },
+                    {
+                        army: [
+                            {
+                                path: 3,
+                                type: FORTIFY.Creep.CREEPTYPE.GROUND,
+                                count: 30
+                            },
+                            {
+                                path: 1,
+                                type: FORTIFY.Creep.CREEPTYPE.AIR,
+                                count: 30
+                            }
+                        ]
+                    }
+                ]   
             }
         ],
         spawnCD: 1000,
@@ -188,6 +264,10 @@ FORTIFY.Levels = function(creeps, grid, treasury, gameOver) {
         }
     }
     
+    function getCurrentLevel() {
+        return currentLevel;
+    }
+    
     function update(elapsedTime) {
         internalUpdate(elapsedTime);        
     }
@@ -198,6 +278,10 @@ FORTIFY.Levels = function(creeps, grid, treasury, gameOver) {
         nextWave: nextWave,
         restartLevel: restartLevel,
         isWaveInProgress: isWaveInProgress,
+<<<<<<< HEAD
         getLevel: function() { return currentLevel; }
+=======
+        getCurrentLevel: getCurrentLevel
+>>>>>>> c89fdac8f176fa914c42715a70c551da283d81f3
     };
 };

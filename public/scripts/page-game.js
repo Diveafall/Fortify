@@ -18,6 +18,7 @@ FORTIFY.pages['page-game'] = (function(gameModel, screens, graphics, input) {
 		// 	// Then, return to the main menu
 		// 	screens.showScreen('page-mainmenu');
 		// });
+		FORTIFY.model.initialize();
 	}
 	
 	function pause() {
