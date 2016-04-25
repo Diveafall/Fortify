@@ -11,7 +11,7 @@ FORTIFY.Levels = function(creeps, grid, treasury, gameOver) {
                                 count: 5
                             }
                         ],
-                        gold: 50
+                        gold: 25
                     },
                     {
                         army: [
@@ -25,7 +25,8 @@ FORTIFY.Levels = function(creeps, grid, treasury, gameOver) {
                                 type: FORTIFY.Creep.CREEPTYPE.GROUND2,
                                 count: 5
                             }
-                        ]
+                        ],
+                        gold: 25
                     }
                 ]
             },
@@ -36,10 +37,10 @@ FORTIFY.Levels = function(creeps, grid, treasury, gameOver) {
                             {
                                 path: 0,
                                 type: FORTIFY.Creep.CREEPTYPE.GROUND,
-                                count: 10
+                                count: 15
                             }
                         ],
-                        gold: 50
+                        gold: 25
                     },
                     {
                         army: [
@@ -53,7 +54,8 @@ FORTIFY.Levels = function(creeps, grid, treasury, gameOver) {
                                 type: FORTIFY.Creep.CREEPTYPE.GROUND2,
                                 count: 10
                             }
-                        ]
+                        ],
+                        gold: 25
                     }
                 ]   
             }
@@ -71,7 +73,6 @@ FORTIFY.Levels = function(creeps, grid, treasury, gameOver) {
             text = {
                 text: text,
                 font: '64px Oswald',
-                //center: { x: gridFrame.center.x * 0.4, y: gridFrame.center.y },
                 direction: { x: 0, y: -Math.PI / 2 },
                 speed: 20,
                 size: 64,
@@ -196,6 +197,7 @@ FORTIFY.Levels = function(creeps, grid, treasury, gameOver) {
         nextLevel: nextLevel,
         nextWave: nextWave,
         restartLevel: restartLevel,
-        isWaveInProgress: isWaveInProgress
+        isWaveInProgress: isWaveInProgress,
+        getLevel: function() { return currentLevel; }
     };
 };

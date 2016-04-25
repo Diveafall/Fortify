@@ -18,13 +18,17 @@
 }
 
 #game .screen h1 {
-    font-size: 75pt;
+    font-size: 85pt;
     color: white;
 }
 
 #game .screen.active {
     background-color: black;
 	display: block;
+}
+
+#game .screen p {
+    color: white;
 }
 
 #page-mainmenu {
@@ -48,10 +52,9 @@ ul.menu li button {
 	font-family: Arial, sans-serif;
 	font-size: 1.5em;
 	color: white;
-	width: 30%;
+	width: 25%;
 	height: 5%;
 	background: #6B818C;
-	box-shadow: 0.1em 0.1em 0.2em white;
 }
 
 ul.menu li button:hover {
@@ -69,6 +72,10 @@ ul.menu li button:active {
 	padding: 0;
 	margin: 0;
 	list-style: none;
+}
+
+#page-highscores li {
+    color: white;
 }
 
 #page-game div p {
@@ -163,9 +170,8 @@ ul.menu li button:active {
 /* STATS PANEL */
 #stats-panel {
     margin: 5px;
-    width: 210px;
+    width: 180px;
     float: left;
-    display: none;
 }
 
 #stats-panel table {
@@ -176,7 +182,7 @@ ul.menu li button:active {
 
 #stats-panel th {
     font-size: 11pt;
-    width: 210px;
+    width: 180px;
     text-align: center;
     color: white;
     background-color: black;
@@ -190,7 +196,7 @@ ul.menu li button:active {
 }
 
 #stats-panel button {
-    width: 105px;
+    width: 90px;
 }
 
 #stats-panel .stat-name {
@@ -214,7 +220,18 @@ ul.menu li button:active {
     color: darkorange;
 }
 
+.upgrade {
+    color: mediumpurple;
+}
+
 /* CONTROLS PAGE */
+#page-controls p {
+    color: white;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
 #page-controls table {
     border-collapse: collapse;
     width: 80%;

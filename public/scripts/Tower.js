@@ -8,29 +8,32 @@ FORTIFY.components.Tower = (function(model, components) {
             levels: [
                 {
                     name: "BLASTOISE",
-                    damage: 10,
-                    shootRate: 1000 / 5,
+                    damage: 20,
+                    shootRate: 1000 / 4,
                     shootRadius: 100,
-                    purchaseCost: 5,
-                    sellCost: 3,
+                    purchaseCost: 15,
+                    upgradeCost: 10,
+                    sellCost: 7,
                     image: components.Managers.ImageManager.getImage('blastoise-1')
                 },
                 {
                     name: "MEGA BLASTOISE",
-                    damage: 15,
-                    shootRate: 1000 / 6,
-                    shootRadius: 150,
-                    purchaseCost: 10,
-                    sellCost: 7,
+                    damage: 30,
+                    shootRate: 1000 / 5,
+                    shootRadius: 125,
+                    purchaseCost: 20,
+                    upgradeCost: 15,
+                    sellCost: 13,
                     image: components.Managers.ImageManager.getImage('blastoise-2')
                 },
                 {
                     name: "GIGA BLASTOISE",
-                    damage: 20,
-                    shootRate: 1000 / 7,
-                    shootRadius: 200,
-                    purchaseCost: 15,
-                    sellCost: 12,
+                    damage: 40,
+                    shootRate: 1000 / 6,
+                    shootRadius: 150,
+                    purchaseCost: 30,
+                    upgradeCost: 20,
+                    sellCost: 23,
                     image: components.Managers.ImageManager.getImage('blastoise-2')
                 }
             ]
@@ -42,29 +45,32 @@ FORTIFY.components.Tower = (function(model, components) {
             levels: [
                 {
                     name: "VULTURE",
-                    damage: 25,
-                    shootRate: 1000 / 1,
+                    damage: 45,
+                    shootRate: 2000 / 1,
                     shootRadius: 200,
-                    purchaseCost: 5,
-                    sellCost: 3,
+                    purchaseCost: 35,
+                    upgradeCost: 15,
+                    sellCost: 17,
                     image: components.Managers.ImageManager.getImage('vulture-1')
                 },
                 {
                     name: "MEGA VULTURE",
-                    damage: 35,
-                    shootRate: 1000 / 2,
-                    shootRadius: 250,
-                    purchaseCost: 10,
-                    sellCost: 7,
+                    damage: 57,
+                    shootRate: 1000 / 1,
+                    shootRadius: 225,
+                    purchaseCost: 45,
+                    upgradeCost: 25,
+                    sellCost: 27,
                     image: components.Managers.ImageManager.getImage('vulture-2')
                 },
                 {
                     name: "HYPER VULTURE",
-                    damage: 45,
-                    shootRate: 1000 / 3,
-                    shootRadius: 300,
-                    purchaseCost: 15,
-                    sellCost: 12,
+                    damage: 75,
+                    shootRate: 1000 / 2,
+                    shootRadius: 250,
+                    purchaseCost: 65,
+                    upgradeCost: 35,
+                    sellCost: 47,
                     image: components.Managers.ImageManager.getImage('vulture-3')
                 }
             ]
@@ -76,11 +82,12 @@ FORTIFY.components.Tower = (function(model, components) {
             levels: [
                 {
                     name: "SEISMIC CHARGE",
-                    damage: 25,
+                    damage: 45,
                     shootRate: 1000 / 1,
                     shootRadius: 100,
-                    purchaseCost: 5,
-                    sellCost: 3,
+                    purchaseCost: 45,
+                    upgradeCost: 25,
+                    sellCost: 27,
                     image: components.Managers.ImageManager.getImage('seismic-1'),
                     effect: components.Effect
                 },
@@ -88,18 +95,20 @@ FORTIFY.components.Tower = (function(model, components) {
                     name: "MEGA SEISMIC CHARGE",
                     damage: 35,
                     shootRate: 1000 / 2,
-                    shootRadius: 150,
-                    purchaseCost: 10,
-                    sellCost: 7,
+                    shootRadius: 125,
+                    purchaseCost: 57,
+                    upgradeCost: 27,
+                    sellCost: 35,
                     image: components.Managers.ImageManager.getImage('seismic-2')
                 },
                 {
                     name: "HYPER SEISMIC CHARGE",
-                    damage: 45,
+                    damage: 25,
                     shootRate: 1000 / 3,
-                    shootRadius: 200,
-                    purchaseCost: 15,
-                    sellCost: 12,
+                    shootRadius: 150,
+                    purchaseCost: 70,
+                    upgradeCost: 50,
+                    sellCost: 46,
                     image: components.Managers.ImageManager.getImage('seismic-3')
                 }
             ]
@@ -114,8 +123,9 @@ FORTIFY.components.Tower = (function(model, components) {
                     damage: 0,
                     shootRate: 2000 / 1,
                     shootRadius: 100,
-                    purchaseCost: 5,
-                    sellCost: 3,
+                    purchaseCost: 25,
+                    upgradeCost: 10,
+                    sellCost: 10,
                     image: components.Managers.ImageManager.getImage('timewarp-1'),
                     effect: components.Effect.SlowEffect
                 },
@@ -124,8 +134,9 @@ FORTIFY.components.Tower = (function(model, components) {
                     damage: 0,
                     shootRate: 2000 / 2,
                     shootRadius: 150,
-                    purchaseCost: 10,
-                    sellCost: 7,
+                    purchaseCost: 40,
+                    upgradeCost: 20,
+                    sellCost: 21,
                     image: components.Managers.ImageManager.getImage('timewarp-2'),
                     effect: components.Effect.SlowEffect
                 },
@@ -134,8 +145,9 @@ FORTIFY.components.Tower = (function(model, components) {
                     damage: 0,
                     shootRate: 2000 / 1,
                     shootRadius: 200,
-                    purchaseCost: 15,
-                    sellCost: 12,
+                    purchaseCost: 65,
+                    upgradeCost: 40,
+                    sellCost: 37,
                     image: components.Managers.ImageManager.getImage('timewarp-3'),
                     effect: components.Effect.FreezeEffect
                 }
@@ -176,6 +188,10 @@ FORTIFY.components.Tower = (function(model, components) {
         
         Object.defineProperty(that, 'sellCost', {
             get: function() { return spec.levels[spec.level].sellCost; }
+        });
+        
+        Object.defineProperty(that, 'upgradeCost', {
+            get: function() { return spec.levels[spec.level].upgradeCost; }
         });
  
         Object.defineProperty(that, 'image', {

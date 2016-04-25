@@ -41,6 +41,7 @@ FORTIFY.StatsPanel = (function() {
         damageLabel = document.getElementById('stat-damage'),
         radiusLabel = document.getElementById('stat-radius'),
         rateLabel = document.getElementById('stat-rate'),
+        upgradeLabel = document.getElementById('stat-upgrade'),
         
         costLabel = document.getElementById('stat-cost'),
         costTypeLabel = document.getElementById('cost-label'),
@@ -60,7 +61,7 @@ FORTIFY.StatsPanel = (function() {
         
     function towerSelected(tower, buying) {
         if (tower) {
-            statPanel.style.display = 'inline';
+            statPanel.style.visibility = 'visible';
             
             selectedTower = tower;
             selectedTower.showRadius(true);
@@ -69,15 +70,15 @@ FORTIFY.StatsPanel = (function() {
             damageLabel.innerHTML = Math.floor(selectedTower.damage);
             radiusLabel.innerHTML = Math.floor(selectedTower.shootRadius);
             rateLabel.innerHTML = Math.floor(selectedTower.shootRate);
+            upgradeLabel.innerHTML = Math.floor(selectedTower.upgradeCost);
             
             if (buying) {
                 costTypeLabel.innerHTML = 'PRICE';
-                buttons.style.display = 'none';
+                buttons.style.visibility = 'hidden';
                 costLabel.innerHTML = Math.floor(selectedTower.purchaseCost);
-                
             } else {
                 costTypeLabel.innerHTML = 'COST';
-                buttons.style.display = 'table-row';
+                buttons.style.visibility = 'visible';
                 costLabel.innerHTML = Math.floor(selectedTower.sellCost);
                 if (tower.canUpgrade()) {
                     rightButton.disabled = false;
@@ -88,11 +89,12 @@ FORTIFY.StatsPanel = (function() {
                 }
             }
         } else {
-            statPanel.style.display = 'none';
             if (selectedTower) {
                 selectedTower.showRadius(false);
                 selectedTower = undefined;
             }
+            statPanel.style.visibility = 'hidden';
+            buttons.style.visibility = 'hidden';
         }
     }
     
@@ -117,16 +119,14 @@ FORTIFY.StatsPanel = (function() {
                     spint: true
                 };
                 FORTIFY.particles.createEffect(soldEffect);
-                
                 FORTIFY.model.towerSold(selectedTower);
-                statPanel.style.display = 'none';
             }
         },
         
         rightButtonPressed: function() {
             if (rightButton.innerHTML === Constants.upgradeString) {
                 if (selectedTower) {
-                    selectedTower.upgrade();
+                    FORTIFY.model.upgradeTower(selectedTower);
                     towerSelected(selectedTower);
                 }
             }
@@ -135,9 +135,8 @@ FORTIFY.StatsPanel = (function() {
         hide: function() {
             if (selectedTower) {
                 selectedTower.showRadius(false);
-                selectedTower = undefined;
             }
-            statPanel.style.display = 'none';
+            statPanel.style.visibility = 'hidden';
         }
     };
 })();

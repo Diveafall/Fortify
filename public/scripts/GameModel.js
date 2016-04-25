@@ -23,7 +23,7 @@ FORTIFY.model = (function(components, graphics, particles, score) {
 	function initialize() {
         console.log('game model initialization');
         
-        remainingLives = 50;
+        remainingLives = 20;
         gameOver = false;
         particles.reset();
         
@@ -55,6 +55,7 @@ FORTIFY.model = (function(components, graphics, particles, score) {
             whichPath: 2,
             type: 0
         }
+        
         testCreepLeftRight = components.Creep.createCreep(leftRightSpec);
         testCreepTopBottom = components.Creep.createCreep(topBottomSpec);
         
@@ -107,6 +108,21 @@ FORTIFY.model = (function(components, graphics, particles, score) {
         FORTIFY.input.Keyboard.registerCommand('pause/cancel', undefined, cancelTowerPlacement);
     }
     
+    function notification(text) {
+        var gridFrame = grid.frame, 
+            text = {
+                text: text,
+                font: '18px Oswald',
+                direction: { x: 0, y: -Math.PI / 2 },
+                speed: 20,
+                size: 18,
+                lifetime: 4
+            };
+            
+        text.center = { x: gridFrame.center.x, y: gridFrame.size.height * 0.9 }
+        FORTIFY.particles.createText(text);
+    }
+    
     // TOWER PURCHASE/SELLING AND PLACEMENT
     function towerPurchased(TowerType) {  
         var tower = TowerType({ level: 0, containerFrame: grid.frame, projectiles: projectiles }); // create the tower 
@@ -115,6 +131,8 @@ FORTIFY.model = (function(components, graphics, particles, score) {
             FORTIFY.StatsPanel.towerSelected(tower, true); // show the new tower on stats panel
             
             switchToPlacingMode();
+        } else {
+            notification('NOT ENOUGH MONEY');
         }
     }
     
@@ -131,7 +149,8 @@ FORTIFY.model = (function(components, graphics, particles, score) {
 	}
     
     function placementMouseClick(event) {
-        if (grid.isPlacing()) {
+        var point = { x: event.offsetX, y: event.offsetY };
+        if (grid.isPlacing() && event.path.length === 11) {
             if (grid.isValid()) { // grid can accomodate this tower
                 // places the tower in the grid, remembers it
                 var tower = grid.endPlacement(true),
@@ -151,6 +170,7 @@ FORTIFY.model = (function(components, graphics, particles, score) {
                     towers.push(tower); // push tower to container
                     FORTIFY.StatsPanel.hide(); // hide the stats panel
                     components.Managers.SoundManager.playSound('buy');
+                // console.log('been here');
                     
                     switchToPlayingMode();
                 } else {
@@ -166,12 +186,14 @@ FORTIFY.model = (function(components, graphics, particles, score) {
                     grid.beginPlacement(tower);
                 }
             } else {
-                // components.Managers.SoundManager.playSound('no');
+                components.Managers.SoundManager.playSound('no');
+                notification('INVALID PLACEMENT');
             }
         }
 	}
     
     function updatePlacing(elapsedTime) {
+        particles.update(elapsedTime);
     }
     
     function renderPlacing() {
@@ -183,6 +205,7 @@ FORTIFY.model = (function(components, graphics, particles, score) {
         for (var i = 0; i < creeps.length; i++) {
             creeps[i].render(graphics)
         }
+        particles.render(graphics);
     }
 
 	function processInput(elapsedTime) {
@@ -261,7 +284,7 @@ FORTIFY.model = (function(components, graphics, particles, score) {
     
     function endGame() {
         gameOver = true;
-        score.addEndGameScore(towers, level);
+        score.addEndGameScore(towers, levels.getLevel());
         score.submit();
         console.log("Game over!");
     }
@@ -380,6 +403,14 @@ FORTIFY.model = (function(components, graphics, particles, score) {
         if (gameOver) { initialize(); return; }
         levels && levels.restartLevel();
     }
+    
+    function upgradeTower(tower) {
+        if (treasury.removeGold(tower.upgradeCost)) {
+            tower.upgrade();
+            return true;
+        }
+        return false;
+    }
 
 	return {
 		initialize: initialize,
@@ -391,6 +422,7 @@ FORTIFY.model = (function(components, graphics, particles, score) {
         creeps: creeps,
         projectiles: projectiles,
         nextLevel: nextLevel,
-        restart: restart
+        restart: restart,
+        upgradeTower: upgradeTower
 	};
 }) (FORTIFY.components, FORTIFY.graphics, FORTIFY.particles, FORTIFY.score);

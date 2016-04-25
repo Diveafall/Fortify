@@ -107,7 +107,7 @@ FORTIFY.input = (function() {
 					shiftKey: e.shiftKey,
 					ctrlKey: e.ctrlKey
 				}, undefined);
-				commandSwitch.className = '';
+				commandSwitch.parentElement.className = 'keybind';
 				commandSwitch = undefined; // switch back to normal mode
 				FORTIFY.pages['page-controls'].run(); // reload controls page
 			} else {
@@ -118,7 +118,8 @@ FORTIFY.input = (function() {
 		return {
 			registerCommand: registerCommand,
 			prepareForSwitch: function(commandLabel) {
-				commandLabel.className += 'selected';
+				console.log(commandLabel.parentElement);
+				commandLabel.parentElement.className += ' selected';
 				commandSwitch = commandLabel;
 			},
 			endSwitch: function() {
