@@ -104,9 +104,10 @@ FORTIFY.Levels = function(creeps, grid, treasury, gameOver) {
             endLevel(); // end current level
             
             currentLevel = level;
+            currentWave = -1;
             Constants.levelLabel.innerHTML = (currentLevel + 1).toString();
             
-            levelNotification('LEVEL ' + (currentLevel + 1).toString() + ' BEGINS!');
+            levelNotification('LEVEL ' + (currentLevel + 1).toString());
             
             beginTimer = Constants.beginCD;
             internalUpdate = updateLevelBeginning;
@@ -125,7 +126,7 @@ FORTIFY.Levels = function(creeps, grid, treasury, gameOver) {
             if (currentWave === 0) FORTIFY.Clock.start();
             else FORTIFY.Clock.resume();
             
-            levelNotification('WAVE ' + (currentWave + 1).toString() + ' BEGINS!'); // notify user
+            levelNotification('WAVE ' + (currentWave + 1).toString()); // notify user
             internalUpdate = updateProgress;
             
             treasury.addGold(Constants.levels[currentLevel].waves[currentWave].gold);

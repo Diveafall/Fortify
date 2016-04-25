@@ -44,7 +44,8 @@ FORTIFY.input = (function() {
 			registerClickHandler: function(handler) {
 				clickHandler = handler;
 			},
-			update: update
+			update: update,
+			reset: function() { clickEvents = []; }
 		};
 	}
 
@@ -100,12 +101,13 @@ FORTIFY.input = (function() {
 		window.onkeyup = function(e) {
 			if (commandSwitch) {
 				console.log('reregistering ', commandSwitch);
-				registerCommand(commandSwitch, {
+				registerCommand(commandSwitch.id, {
 					keyCode: e.keyCode,
 					altKey: e.altKey,
 					shiftKey: e.shiftKey,
 					ctrlKey: e.ctrlKey
 				}, undefined);
+				commandSwitch.className = '';
 				commandSwitch = undefined; // switch back to normal mode
 				FORTIFY.pages['page-controls'].run(); // reload controls page
 			} else {
@@ -115,8 +117,9 @@ FORTIFY.input = (function() {
 		
 		return {
 			registerCommand: registerCommand,
-			prepareForSwitch: function(command, onComplete) {
-				commandSwitch = command;
+			prepareForSwitch: function(commandLabel) {
+				commandLabel.className += 'selected';
+				commandSwitch = commandLabel;
 			},
 			endSwitch: function() {
 				commandSwitch = undefined

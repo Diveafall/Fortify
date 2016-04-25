@@ -4,7 +4,7 @@ FORTIFY.model = (function(components, graphics, particles, score) {
         towers = [],
         creeps = [],
         projectiles = [],
-        remainingLives = 50,
+        remainingLives,
         levels,
         gameOver,
         treasury,
@@ -23,6 +23,7 @@ FORTIFY.model = (function(components, graphics, particles, score) {
 	function initialize() {
         console.log('game model initialization');
         
+        remainingLives = 50;
         gameOver = false;
         particles.reset();
         
@@ -123,7 +124,6 @@ FORTIFY.model = (function(components, graphics, particles, score) {
         var index = towers.indexOf(tower);
         towers.splice(index, 1);
         components.Managers.SoundManager.playSound('sold');
-        // TODO: ADD GOLD TO TREASURY
     }
     
     function placementMouseMove(event) {
@@ -162,11 +162,11 @@ FORTIFY.model = (function(components, graphics, particles, score) {
                         creeps[i].updatePath(grid);
                     }
                     
-                    components.Managers.SoundManager.playSound('no');
-                    
                     // continue tower placement
                     grid.beginPlacement(tower);
                 }
+            } else {
+                // components.Managers.SoundManager.playSound('no');
             }
         }
 	}

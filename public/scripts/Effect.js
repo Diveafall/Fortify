@@ -49,6 +49,10 @@ FORTIFY.components.Effect = (function(model) {
     function FreezeEffect() {
         var spec = { duration: Constants.slowDuration }, that = Effect(spec);
         
+        that.affect = function(stats) {
+            stats.moveDistance *= 0;
+        };
+        
         return that;
     }
     

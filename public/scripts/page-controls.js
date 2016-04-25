@@ -8,7 +8,7 @@ FORTIFY.pages['page-controls'] = (function(screens) {
 		nextLevel = document.getElementById('nextlevel');
 		
 	function changeKey(label) {
-		FORTIFY.input.Keyboard.prepareForSwitch(label.id, function() { run(); });
+		FORTIFY.input.Keyboard.prepareForSwitch(label);
 	}
 
 	function initialize() {

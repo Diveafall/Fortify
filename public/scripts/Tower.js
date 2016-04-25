@@ -81,7 +81,8 @@ FORTIFY.components.Tower = (function(model, components) {
                     shootRadius: 100,
                     purchaseCost: 5,
                     sellCost: 3,
-                    image: components.Managers.ImageManager.getImage('seismic-1')
+                    image: components.Managers.ImageManager.getImage('seismic-1'),
+                    effect: components.Effect
                 },
                 {
                     name: "MEGA SEISMIC CHARGE",
@@ -111,29 +112,32 @@ FORTIFY.components.Tower = (function(model, components) {
                 {
                     name: "TIME WARP",
                     damage: 0,
-                    shootRate: 1000 / 1,
+                    shootRate: 2000 / 1,
                     shootRadius: 100,
                     purchaseCost: 5,
                     sellCost: 3,
-                    image: components.Managers.ImageManager.getImage('timewarp-1')
+                    image: components.Managers.ImageManager.getImage('timewarp-1'),
+                    effect: components.Effect.SlowEffect
                 },
                 {
                     name: "TIME MEGA WARP",
                     damage: 0,
-                    shootRate: 1000 / 2,
+                    shootRate: 2000 / 2,
                     shootRadius: 150,
                     purchaseCost: 10,
                     sellCost: 7,
-                    image: components.Managers.ImageManager.getImage('timewarp-2')
+                    image: components.Managers.ImageManager.getImage('timewarp-2'),
+                    effect: components.Effect.SlowEffect
                 },
                 {
                     name: "TIME HYPER WARP",
                     damage: 0,
-                    shootRate: 1000 / 3,
+                    shootRate: 2000 / 1,
                     shootRadius: 200,
                     purchaseCost: 15,
                     sellCost: 12,
-                    image: components.Managers.ImageManager.getImage('timewarp-3')
+                    image: components.Managers.ImageManager.getImage('timewarp-3'),
+                    effect: components.Effect.FreezeEffect
                 }
             ]
         }
@@ -176,6 +180,10 @@ FORTIFY.components.Tower = (function(model, components) {
  
         Object.defineProperty(that, 'image', {
             get: function() { return spec.levels[spec.level].image; }
+        });
+        
+        Object.defineProperty(that, 'effect', {
+            get: function() { return spec.levels[spec.level].effect; }
         });
         
         // makes the shooting radius visible
@@ -448,7 +456,7 @@ FORTIFY.components.Tower = (function(model, components) {
             }), base = { render: tower.render };
         
         tower.affect = function(creep) {
-            creep.applyEffect(components.Effect.SlowEffect());
+            creep.applyEffect(tower.effect());
         }
         
         tower.render = function(context) {

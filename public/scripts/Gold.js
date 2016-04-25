@@ -16,6 +16,7 @@ FORTIFY.Gold = function() {
     }
     
     function addGold(amount) {
+        if (!amount) return;
         gold += amount;
         refreshGoldLabel();
     }
