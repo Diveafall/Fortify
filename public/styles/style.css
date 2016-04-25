@@ -243,3 +243,7 @@ ul.menu li button:active {
 .selected {
     background-color: greenyellow;
 }
+
+.white-text {
+    color: white;
+}

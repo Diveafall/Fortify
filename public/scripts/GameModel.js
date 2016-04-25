@@ -23,16 +23,17 @@ FORTIFY.model = (function(components, graphics, particles, score) {
 	function initialize() {
         console.log('game model initialization');
         
-        remainingLives = 50;
+        remainingLives = 10;
         gameOver = false;
         particles.reset();
+        score.reset();
         
         grid = components.GameGrid({ frame: graphics.canvasFrame() });
         treasury = FORTIFY.Gold();
         
         // INITIALIZE STUFF
         FORTIFY.Util.init();
-        levels = FORTIFY.Levels(creeps, grid, treasury, function() { gameOver = true; });
+        levels = FORTIFY.Levels(creeps, grid, treasury, function() { endGame(); });
         
         // REGISTER KEYS
         FORTIFY.input.Keyboard.registerCommand('sell', undefined, FORTIFY.StatsPanel.leftButtonPressed);
@@ -261,7 +262,7 @@ FORTIFY.model = (function(components, graphics, particles, score) {
     
     function endGame() {
         gameOver = true;
-        score.addEndGameScore(towers, level);
+        score.addEndGameScore(towers, levels.getCurrentLevel());
         score.submit();
         console.log("Game over!");
     }

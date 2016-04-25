@@ -37,9 +37,11 @@
             <!-- HIGH SCORE PAGE -->
             <div id="page-highscores" class="screen">
                 <h1>HIGH SCORES</h1>
+                <span class="white-text">
                 <ol id="high-scores-list">
                     <li>7000</li>
                 </ol>
+                </span>
                 <ul class = "menu">
                     <li><button id="id-high-scores-back">Back</button></li>
                 </ul>
@@ -74,8 +76,8 @@
             <!-- ABOUT PAGE -->
             <div id = "page-about" class = "screen">
                 <h1>ABOUT</h1>
-                <p>Developed by</p>
-                <p>Brad Richardson and David Isayan</p>
+                <p class="white-text">Developed by</p>
+                <p class="white-text">Brad Richardson and David Isayan</p>
                 <ul class = "menu">
                     <li><button id = "id-about-back">Back</button></li>
                 </ul>
@@ -107,7 +109,7 @@
                     
                     <!-- CONTROL PANEL -->
                     <div id="control-panel" class="button-container">
-                        <button onclick="FORTIFY.model.nextWave()">NEXT LEVEL</button>
+                        <button onclick="FORTIFY.model.nextLevel()">NEXT LEVEL</button>
                         <button onclick="FORTIFY.model.restart()">RESTART</button>
                     </div>
                     
