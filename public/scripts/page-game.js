@@ -9,15 +9,6 @@ FORTIFY.pages['page-game'] = (function(gameModel, screens, graphics, input) {
 	// All one-time game page initialization is performed here.
 	function initialize() {
 		console.log('game initializing...');
-
-		// keyboard.registerCommand({ key: KeyEvent.DOM_VK_ESCAPE }, function() {
-		// 	//
-		// 	// Stop the game loop by canceling the request for the next animation frame
-		// 	cancelNextRequest = true;
-		// 	//
-		// 	// Then, return to the main menu
-		// 	screens.showScreen('page-mainmenu');
-		// });
 		FORTIFY.model.initialize();
 	}
 	

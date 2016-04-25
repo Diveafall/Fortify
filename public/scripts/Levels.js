@@ -148,7 +148,7 @@ FORTIFY.Levels = function(creeps, grid, treasury, gameOver) {
         var gridFrame = grid.frame, 
             text = {
                 text: text,
-                font: '64px Oswald',
+                font: '64px Oswald, sans-serif',
                 direction: { x: 0, y: -Math.PI / 2 },
                 speed: 20,
                 size: 64,
@@ -274,6 +274,9 @@ FORTIFY.Levels = function(creeps, grid, treasury, gameOver) {
         nextWave: nextWave,
         restartLevel: restartLevel,
         isWaveInProgress: isWaveInProgress,
-        getLevel: function() { return currentLevel; }
+        getLevel: function() { return currentLevel; },
+        gameOver: function() {
+            levelNotification('DEFEAT');
+        }
     };
 };

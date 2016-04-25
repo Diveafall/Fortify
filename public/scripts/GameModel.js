@@ -28,6 +28,8 @@ FORTIFY.model = (function(components, graphics, particles, score) {
         particles.reset();
         score.reset();
         
+        towers = [];
+        
         grid = components.GameGrid({ frame: graphics.canvasFrame() });
         treasury = FORTIFY.Gold();
         
@@ -288,6 +290,7 @@ FORTIFY.model = (function(components, graphics, particles, score) {
         score.addEndGameScore(towers, levels.getLevel());
         score.submit();
         console.log("Game over!");
+        levels.gameOver();
     }
     
     //------------------------------------------------------------------
