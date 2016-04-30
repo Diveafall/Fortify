@@ -216,7 +216,7 @@ FORTIFY.components = (function(Creep, AnimatedModel) {
                     }
                 }
                 
-                currentSelection.selectedTower.origin = currentSelection.highlightedCells[0].pointOrigin; // update tower origin
+                if (currentSelection.highlightedCells.length > 0) currentSelection.selectedTower.origin = currentSelection.highlightedCells[0].pointOrigin; // update tower origin
             }
         };
         

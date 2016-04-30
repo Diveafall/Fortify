@@ -153,7 +153,7 @@ FORTIFY.model = (function(components, graphics, particles, score) {
     
     function placementMouseClick(event) {
         var point = { x: event.offsetX, y: event.offsetY };
-        if (grid.isPlacing() && event.path.length === 11) {
+        if (grid.isPlacing() && event.target === graphics.getCanvas()) {
             if (grid.isValid()) { // grid can accomodate this tower
                 // places the tower in the grid, remembers it
                 var tower = grid.endPlacement(true),
@@ -421,12 +421,16 @@ FORTIFY.model = (function(components, graphics, particles, score) {
 		processInput: processInput,
 		update: update,
 		render: render,
-        towerPurchased: towerPurchased,
+        // towerPurchased: towerPurchased,
         towerSold: towerSold,
         creeps: creeps,
         projectiles: projectiles,
         nextLevel: nextLevel,
         restart: restart,
-        upgradeTower: upgradeTower
+        upgradeTower: upgradeTower,
+        buyBlastoise: buyBlastoise,
+        buySeismic: buySeismic,
+        buyVulture: buyVulture,
+        buyTimewarp: buyTimewarp
 	};
 }) (FORTIFY.components, FORTIFY.graphics, FORTIFY.particles, FORTIFY.score);
