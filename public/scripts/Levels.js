@@ -242,7 +242,6 @@ FORTIFY.Levels = function(creeps, grid, treasury, gameOver) {
                     internalUpdate = updateWaveBeginning;
                     FORTIFY.Clock.pause();
                 } else { // YOU WON!
-                    levelNotification('VICTORY!');
                     gameOver();
                 }
             } 
@@ -277,6 +276,9 @@ FORTIFY.Levels = function(creeps, grid, treasury, gameOver) {
         getLevel: function() { return currentLevel; },
         gameOver: function() {
             levelNotification('DEFEAT');
+        },
+        victory: function() {
+            levelNotification('VICTORY');
         }
     };
 };

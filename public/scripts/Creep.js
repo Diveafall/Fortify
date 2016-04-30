@@ -169,7 +169,7 @@ FORTIFY.Creep = (function(Util, AnimatedModel) {
             return points;
         })();
         that.gold = (function() {
-            return Math.floor(that.points * 0.1);
+            return Math.floor(that.points * 0.075);
         })();
         
         // return the total number of cells required for this creep

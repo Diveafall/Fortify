@@ -315,11 +315,12 @@ FORTIFY.model = (function(components, graphics, particles, score) {
     }
     
     function endGame() {
-        if (remainingLives <= 0) gameOver = true;
+        
+        gameOver = true;
         score.addEndGameScore(towers, levels.getLevel());
         score.submit();
-        console.log("Game over!");
-        levels.gameOver();
+        if (creeps.length > 0) levels.gameOver();
+        else levels.victory();
     }
     
     //------------------------------------------------------------------
