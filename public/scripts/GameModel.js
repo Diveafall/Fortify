@@ -147,13 +147,44 @@ FORTIFY.model = (function(components, graphics, particles, score) {
         components.Managers.SoundManager.playSound('sold');
     }
     
+    var canvasElement = document.getElementById('canvas-main');
+    function calculateMouseOffset(event) {
+        var boundingRect = canvasElement.getBoundingClientRect();
+        
+        var offsetX = event.clientX - boundingRect.left,
+            offsetY = event.clientY - boundingRect.top;
+        if (offsetX < 0) {
+            offsetX = 0;
+        } else if (offsetX > canvasElement.width) {
+            offsetX = canvasElement.width;
+        }
+        if (offsetY < 0) {
+            offsetY = 0;
+        } else if (offsetY > canvasElement.height) {
+            offsetY = canvasElement.height;
+        }
+        
+        return {
+            x: offsetX,
+            y: offsetY
+        }
+    }
+    
     function placementMouseMove(event) {
-        grid.update(event.offsetX, event.offsetY);
+        var offset = calculateMouseOffset(event);
+        grid.update(offset.x, offset.y);
+        //console.log(event.offsetX, event.offsetY);
+        //console.log(offsetX, offsetY);
 	}
     
+
+    
     function placementMouseClick(event) {
-        var point = { x: event.offsetX, y: event.offsetY };
-        if (grid.isPlacing() && event.path.length === 11) {
+        var offset = calculateMouseOffset(event);
+        var point = { x: offset.x, y: offset.y };
+        //console.log(event);
+        //console.log(event.target);
+        if (grid.isPlacing() && event.target === canvasElement) {// && event.path.length === 11) {
             if (grid.isValid()) { // grid can accomodate this tower
                 // places the tower in the grid, remembers it
                 var tower = grid.endPlacement(true),
