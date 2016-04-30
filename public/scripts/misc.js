@@ -61,6 +61,8 @@ FORTIFY.StatsPanel = (function() {
         
     function towerSelected(tower, buying) {
         if (tower) {
+            if (selectedTower) selectedTower.showRadius(false);
+            
             statPanel.style.visibility = 'visible';
             
             selectedTower = tower;

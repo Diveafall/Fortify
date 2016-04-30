@@ -173,8 +173,6 @@ FORTIFY.model = (function(components, graphics, particles, score) {
     function placementMouseMove(event) {
         var offset = calculateMouseOffset(event);
         grid.update(offset.x, offset.y);
-        //console.log(event.offsetX, event.offsetY);
-        //console.log(offsetX, offsetY);
 	}
     
 
@@ -250,7 +248,8 @@ FORTIFY.model = (function(components, graphics, particles, score) {
 	}
     
 	function playingMouseClick(event) {
-        var point = { x: event.offsetX, y: event.offsetY };
+        var offset = calculateMouseOffset(event);
+        var point = { x: offset.x, y: offset.y };
         for (var i = 0; i < towers.length; ++i) {
             if (towers[i].doesContain(point)) {
                 FORTIFY.StatsPanel.towerSelected(towers[i]);
@@ -316,7 +315,7 @@ FORTIFY.model = (function(components, graphics, particles, score) {
     }
     
     function endGame() {
-        gameOver = true;
+        if (remainingLives <= 0) gameOver = true;
         score.addEndGameScore(towers, levels.getLevel());
         score.submit();
         console.log("Game over!");
